@@ -1,8 +1,8 @@
 package com.ptit.elearningsecurity.data.request;
 
-import com.ptit.elearningsecurity.entity.image.ImageData;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class LessonRequest {
     private String title;
     private String description;
     private String content;
-    private ImageData coverImage;
-    private List<ImageData> contentsImages;
+    private MultipartFile coverImage;
+    private List<MultipartFile> contentsImages;
     private int categoryLessonID;
 }

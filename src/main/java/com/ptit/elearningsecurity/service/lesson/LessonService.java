@@ -6,14 +6,18 @@ import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
 import com.ptit.elearningsecurity.entity.CategoryLesson;
 import com.ptit.elearningsecurity.entity.Lesson;
+import com.ptit.elearningsecurity.entity.image.ImageData;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import com.ptit.elearningsecurity.exception.LessonCustomException;
 import com.ptit.elearningsecurity.repository.CategoryLessonRepository;
 import com.ptit.elearningsecurity.repository.LessonRepository;
+import com.ptit.elearningsecurity.service.imageData.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,6 +28,7 @@ public class LessonService implements ILessonService {
 
     private final LessonRepository lessonRepository;
     private final CategoryLessonRepository categoryLessonRepository;
+    private final ImageService imageService;
     private final LessonMapper lessonMapper;
 
     @Override
@@ -44,7 +49,7 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public LessonResponse createLesson(LessonRequest lessonRequest) throws CategoryLessonCustomException {
+    public LessonResponse createLesson(LessonRequest lessonRequest) throws CategoryLessonCustomException, IOException {
         Lesson lesson = lessonMapper.toPojo(lessonRequest);
         Optional<CategoryLesson> categoryLessonOptional =
                 categoryLessonRepository.findById(lessonRequest.getCategoryLessonID());
@@ -54,7 +59,13 @@ public class LessonService implements ILessonService {
                     DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
             );
         }
+        ImageData imageCover = imageService.uploadImage(lessonRequest.getCoverImage());
+        List<ImageData> imagesContents = imageService.uploadListImage(lessonRequest.getContentsImages());
+
         lesson.setCategoryLesson(categoryLessonOptional.get());
+        lesson.setCoverImage(imageCover);
+        lesson.setContentsImages(imagesContents);
+
         return lessonMapper.toResponse(
                 lessonRepository.save(lesson));
     }

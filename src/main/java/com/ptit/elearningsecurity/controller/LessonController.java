@@ -1,7 +1,11 @@
 package com.ptit.elearningsecurity.controller;
 
+import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
+import com.ptit.elearningsecurity.entity.image.ImageData;
+import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import com.ptit.elearningsecurity.exception.LessonCustomException;
+import com.ptit.elearningsecurity.service.imageData.ImageService;
 import com.ptit.elearningsecurity.service.lesson.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -33,17 +38,39 @@ public class LessonController {
             @RequestPart("title") String title,
             @RequestPart("description") String description,
             @RequestPart("content") String content,
-            @RequestPart("coverImage")MultipartFile coverImage,
+            @RequestPart("coverImage") MultipartFile coverImage,
             @RequestPart("contentsImages") List<MultipartFile> contentsImages,
             @RequestPart("categoryLessonID") int categoryLessonID
-            ) {
-
-        return null;
+    ) throws CategoryLessonCustomException, IOException {
+        LessonRequest lessonRequest = new LessonRequest();
+        lessonRequest.setTitle(title)
+                .setDescription(description)
+                .setContent(content)
+                .setCoverImage(coverImage)
+                .setContentsImages(contentsImages)
+                .setCategoryLessonID(categoryLessonID);
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.createLesson(lessonRequest));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<LessonResponse> updateLesson() {
-        return null;
+    public ResponseEntity<LessonResponse> updateLesson(
+            @RequestPart("title") String title,
+            @RequestPart("description") String description,
+            @RequestPart("content") String content,
+            @RequestPart("coverImage") MultipartFile coverImage,
+            @RequestPart("contentsImages") List<MultipartFile> contentsImages,
+            @RequestPart("categoryLessonID") int categoryLessonID,
+            @PathVariable("id") int lessonID
+    ) throws CategoryLessonCustomException {
+        LessonRequest lessonRequest = new LessonRequest();
+        lessonRequest.setTitle(title)
+                .setDescription(description)
+                .setContent(content)
+                .setCoverImage(coverImage)
+                .setContentsImages(contentsImages)
+                .setCategoryLessonID(categoryLessonID);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(lessonService.updateLesson(lessonRequest, lessonID));
     }
 
     @DeleteMapping("/{id}")
