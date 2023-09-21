@@ -9,7 +9,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class RestControllerEntityExceptionHandler extends ResponseEntityExceptionHandler {
-
     @ExceptionHandler(CategoryLessonCustomException.class)
     public ResponseEntity<ErrorResponse> handleCategoryLessonException(CategoryLessonCustomException exception) {
         ErrorResponse errorResponse = new ErrorResponse()

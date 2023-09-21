@@ -1,4 +1,4 @@
-package com.ptit.elearningsecurity.entity.image;
+package com.ptit.elearningsecurity.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,11 +15,7 @@ public class ImageData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    private String name;
+    private String imageName;
+    private String imageUrl;
     private String type;
-
-    @Lob
-    @Column(name = "image_data", length = 1000)
-    private byte[] imageData;
 }

@@ -12,7 +12,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class ImageDataCustomException extends Exception {
-
     private String errorCode;
 
     public ImageDataCustomException(String message, String errorCode) {

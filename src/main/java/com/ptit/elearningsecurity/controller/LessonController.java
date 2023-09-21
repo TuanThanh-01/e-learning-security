@@ -2,10 +2,8 @@ package com.ptit.elearningsecurity.controller;
 
 import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
-import com.ptit.elearningsecurity.entity.image.ImageData;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import com.ptit.elearningsecurity.exception.LessonCustomException;
-import com.ptit.elearningsecurity.service.imageData.ImageService;
 import com.ptit.elearningsecurity.service.lesson.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,7 +59,7 @@ public class LessonController {
             @RequestPart("contentsImages") List<MultipartFile> contentsImages,
             @RequestPart("categoryLessonID") int categoryLessonID,
             @PathVariable("id") int lessonID
-    ) throws CategoryLessonCustomException {
+    ) throws CategoryLessonCustomException, IOException {
         LessonRequest lessonRequest = new LessonRequest();
         lessonRequest.setTitle(title)
                 .setDescription(description)
@@ -74,7 +72,7 @@ public class LessonController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteLesson(@PathVariable("id") int lessonID) throws LessonCustomException {
+    public ResponseEntity<String> deleteLesson(@PathVariable("id") int lessonID) throws LessonCustomException, IOException {
         lessonService.deleteLesson(lessonID);
         return ResponseEntity.status(HttpStatus.OK).body("Delete Lesson Successfully!");
     }

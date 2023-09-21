@@ -1,6 +1,6 @@
 package com.ptit.elearningsecurity.data.response;
 
-import com.ptit.elearningsecurity.entity.image.ImageData;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +13,10 @@ public class LessonResponse {
     private String title;
     private String description;
     private String content;
-    private ImageData coverImage;
-    private List<ImageData> contentsImages;
+    @JsonProperty("cover_image_url")
+    private String coverImageUrl;
+    @JsonProperty("list_content_image_url")
+    private List<String> contentsImagesUrl;
+    @JsonProperty("category_lesson_name")
     private String categoryLessonName;
 }

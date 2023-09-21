@@ -1,6 +1,5 @@
 package com.ptit.elearningsecurity.entity;
 
-import com.ptit.elearningsecurity.entity.image.ImageData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

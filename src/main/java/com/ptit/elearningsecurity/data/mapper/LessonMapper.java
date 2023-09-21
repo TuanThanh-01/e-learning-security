@@ -2,13 +2,8 @@ package com.ptit.elearningsecurity.data.mapper;
 
 import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
-import com.ptit.elearningsecurity.entity.CategoryLesson;
 import com.ptit.elearningsecurity.entity.Lesson;
-import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
-import com.ptit.elearningsecurity.repository.CategoryLessonRepository;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.util.List;
@@ -18,8 +13,12 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class LessonMapper {
 
+    @Mapping(target = "coverImage", ignore = true)
+    @Mapping(target = "contentsImages", ignore = true)
     public abstract Lesson toPojo(LessonRequest lessonRequest);
 
+    @Mapping(target = "coverImage", ignore = true)
+    @Mapping(target = "contentsImages", ignore = true)
     @Named("toRs")
     public abstract LessonResponse toResponse(Lesson lesson);
 

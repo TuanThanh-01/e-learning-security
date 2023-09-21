@@ -12,7 +12,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class CategoryLessonCustomException extends Exception{
-
     private String errorCode;
 
     public CategoryLessonCustomException(String message, String errorCode) {
