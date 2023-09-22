@@ -34,7 +34,7 @@ public class CategoryLessonController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<CategoryLessonResponse> updateById(@PathVariable("id") int categoyLessonID, CategoryLessonRequest categoryLessonRequest) throws CategoryLessonCustomException {
+    public ResponseEntity<CategoryLessonResponse> updateById(@PathVariable("id") int categoyLessonID, @RequestBody CategoryLessonRequest categoryLessonRequest) throws CategoryLessonCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(categoryLessonService.update(categoryLessonRequest, categoyLessonID));
     }
 

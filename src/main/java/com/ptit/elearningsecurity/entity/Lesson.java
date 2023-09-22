@@ -20,23 +20,23 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_cover_id")
     private ImageData coverImage;
 
-    @Column(name = "create_date", nullable = false, updatable = false)
+    @Column(name = "create_date")
     private Instant createdAt;
 
-    @Column(name = "update_date", nullable = false)
+    @Column(name = "update_date")
     private Instant updatedAt;
 
     @ManyToOne(cascade = CascadeType.ALL)

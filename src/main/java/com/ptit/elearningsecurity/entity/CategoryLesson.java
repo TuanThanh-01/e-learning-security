@@ -18,16 +18,16 @@ public class CategoryLesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String categoryName;
 
-    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "create_date", nullable = false, updatable = false)
+    @Column(name = "create_date")
     private Instant createdAt;
 
-    @Column(name = "update_date", nullable = false)
+    @Column(name = "update_date")
     private Instant updatedAt;
 
     @OneToMany(mappedBy = "categoryLesson")
