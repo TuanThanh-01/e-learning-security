@@ -34,14 +34,14 @@ public class CategoryLessonController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<CategoryLessonResponse> updateById(@PathVariable("id") int categoyLessonID, @RequestBody CategoryLessonRequest categoryLessonRequest) throws CategoryLessonCustomException {
-        return ResponseEntity.status(HttpStatus.OK).body(categoryLessonService.update(categoryLessonRequest, categoyLessonID));
+    public ResponseEntity<CategoryLessonResponse> updateById(@PathVariable("id") int categoryLessonID, @RequestBody CategoryLessonRequest categoryLessonRequest) throws CategoryLessonCustomException {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryLessonService.update(categoryLessonRequest, categoryLessonID));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable("id") int categoyLessonID) throws CategoryLessonCustomException {
-        categoryLessonService.delete(categoyLessonID);
-        return ResponseEntity.status(HttpStatus.OK).body("Delete category lesson with ID " + categoyLessonID + " successfully!");
+    public ResponseEntity<String> deleteById(@PathVariable("id") int categoryLessonID) throws CategoryLessonCustomException {
+        categoryLessonService.delete(categoryLessonID);
+        return ResponseEntity.status(HttpStatus.OK).body("Delete category lesson with ID " + categoryLessonID + " successfully!");
     }
 
 }

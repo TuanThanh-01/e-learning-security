@@ -3,6 +3,7 @@ package com.ptit.elearningsecurity.controller;
 import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
+import com.ptit.elearningsecurity.exception.ImageDataCustomException;
 import com.ptit.elearningsecurity.exception.LessonCustomException;
 import com.ptit.elearningsecurity.service.lesson.LessonService;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +32,14 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.findById(lessonID));
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<LessonResponse> createLesson(
-            @RequestPart("title") String title,
-            @RequestPart("description") String description,
-            @RequestPart("content") String content,
-            @RequestPart("coverImage") MultipartFile coverImage,
-            @RequestPart("contentsImages") List<MultipartFile> contentsImages,
-            @RequestPart("categoryLessonID") int categoryLessonID
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("content") String content,
+            @RequestParam("coverImage") MultipartFile coverImage,
+            @RequestParam("contentsImages") List<MultipartFile> contentsImages,
+            @RequestParam("categoryLessonID") int categoryLessonID
     ) throws CategoryLessonCustomException, IOException {
         LessonRequest lessonRequest = new LessonRequest();
         lessonRequest.setTitle(title)
@@ -52,14 +53,14 @@ public class LessonController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<LessonResponse> updateLesson(
-            @RequestPart("title") String title,
-            @RequestPart("description") String description,
-            @RequestPart("content") String content,
-            @RequestPart("coverImage") MultipartFile coverImage,
-            @RequestPart("contentsImages") List<MultipartFile> contentsImages,
-            @RequestPart("categoryLessonID") int categoryLessonID,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "coverImage", required = false) MultipartFile coverImage,
+            @RequestParam(value = "contentsImages", required = false) List<MultipartFile> contentsImages,
+            @RequestParam(value = "categoryLessonID", required = false, defaultValue = "0") int categoryLessonID,
             @PathVariable("id") int lessonID
-    ) throws CategoryLessonCustomException, IOException {
+    ) throws CategoryLessonCustomException, IOException, ImageDataCustomException, LessonCustomException {
         LessonRequest lessonRequest = new LessonRequest();
         lessonRequest.setTitle(title)
                 .setDescription(description)

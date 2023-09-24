@@ -30,6 +30,6 @@ public class CategoryLesson {
     @Column(name = "update_date")
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "categoryLesson")
+    @OneToMany(mappedBy = "categoryLesson", cascade = CascadeType.ALL)
     private List<Lesson> lessons;
 }

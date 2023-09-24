@@ -39,7 +39,7 @@ public class Lesson {
     @Column(name = "update_date")
     private Instant updatedAt;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "category_lession_id")
     private CategoryLesson categoryLesson;
 

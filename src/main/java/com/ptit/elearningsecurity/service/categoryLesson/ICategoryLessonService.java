@@ -2,8 +2,6 @@ package com.ptit.elearningsecurity.service.categoryLesson;
 
 import com.ptit.elearningsecurity.data.request.CategoryLessonRequest;
 import com.ptit.elearningsecurity.data.response.CategoryLessonResponse;
-import com.ptit.elearningsecurity.entity.CategoryLesson;
-import com.ptit.elearningsecurity.entity.Lesson;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 
 import java.util.List;

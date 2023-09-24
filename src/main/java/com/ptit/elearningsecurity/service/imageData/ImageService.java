@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -24,8 +25,31 @@ import java.util.Optional;
 public class ImageService {
 
     private final ImageDataRepository imageDataRepository;
+    private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
 
-    public String getImgUrlById(int imageDataID) throws ImageDataCustomException {
+    public ImageData saveImage(String imageFolder, MultipartFile image) throws IOException {
+        Path staticPath = Paths.get("static");
+        Path imagePath = Paths.get("images");
+        Path folderName = Paths.get(imageFolder);
+
+        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(folderName))) {
+            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(folderName));
+        }
+
+        Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
+                .resolve(imagePath).resolve(folderName)
+                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+        try(OutputStream os = Files.newOutputStream(imageFilePath)){
+            os.write(image.getBytes());
+        }
+        ImageData imageData = new ImageData();
+        imageData.setImageName(image.getOriginalFilename())
+                .setType(image.getContentType())
+                .setImageUrl("/images/" + imageFolder + "/" + image.getOriginalFilename());
+        return imageDataRepository.save(imageData);
+    }
+
+    public void updateImage(int imageDataID, String imageFolder, MultipartFile image) throws IOException, ImageDataCustomException {
         Optional<ImageData> imageDataOptional = imageDataRepository.findById(imageDataID);
         if (imageDataOptional.isEmpty()) {
             throw new ImageDataCustomException(
@@ -33,41 +57,71 @@ public class ImageService {
                     DataUtils.ERROR_IMAGE_DATA_NOT_FOUND
             );
         }
-        return imageDataOptional.get().getImageUrl();
-    }
+        ImageData imageData = imageDataOptional.get();
 
-
-    public ImageData saveImage(String lessonTitle, MultipartFile image) throws IOException {
-        Path uploadDirectory = Paths.get(DataUtils.IMAGE_DIRECTORY);
-        Path folderName = Paths.get(lessonTitle);
-
-        if (!Files.exists(uploadDirectory.resolve(folderName))) {
-            Files.createDirectories(uploadDirectory.resolve(folderName));
+        Path staticPath = Paths.get("static");
+        Path imagePath = Paths.get("images");
+        Path folderName = Paths.get(imageFolder);
+        Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
+                .resolve(imagePath).resolve(folderName)
+                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+        try(OutputStream os = Files.newOutputStream(imageFilePath)){
+            os.write(image.getBytes());
         }
-
-        Path imagePath = uploadDirectory.resolve(folderName).resolve(image.getName());
-        OutputStream os = Files.newOutputStream(imagePath);
-        os.write(image.getBytes());
-        ImageData imageData = new ImageData();
-        imageData.setImageName(image.getName())
-                .setType(image.getContentType())
-                .setImageUrl(imagePath.toString());
-        return imageDataRepository.save(imageData);
+        imageData.setImageUrl("/images/" + imageFolder + "/" + image.getOriginalFilename());
+        imageData.setImageName(image.getOriginalFilename());
+        imageDataRepository.save(imageData);
     }
 
-    public List<ImageData> saveAllImages(String lessonTitle, List<MultipartFile> images) throws IOException {
+    public List<ImageData> saveAllImages(String imageFolder, List<MultipartFile> images) throws IOException {
         List<ImageData> imageDataList = new ArrayList<>();
         for (MultipartFile image : images) {
-            imageDataList.add(saveImage(lessonTitle, image));
+            imageDataList.add(saveImage(imageFolder, image));
         }
         return imageDataList;
     }
 
     public void deleteImageResource(String imageUrl) throws IOException {
-        FileUtils.delete(new File(imageUrl));
+        Path staticPath = Paths.get("static");
+        String imageUrlPath = CURRENT_FOLDER.resolve(staticPath).toString() + imageUrl;
+        FileUtils.delete(new File(imageUrlPath));
+    }
+
+    public void deleteImageDirectory(String imageFolder) throws IOException {
+        Path staticPath = Paths.get("static");
+        Path imagePath = Paths.get("images");
+        Path folderName = Paths.get(imageFolder);
+        String pathDirectoryDelete = CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(folderName).toString();
+        FileUtils.deleteDirectory(new File(pathDirectoryDelete));
     }
 
     public void deleteImageByID(int imageID) {
         imageDataRepository.deleteById(imageID);
     }
+
+    public void updateImageDirectoryName(String oldName, String newName) {
+        Path staticPath = Paths.get("static");
+        Path imagePath = Paths.get("images");
+        Path sourceFolderName = Paths.get(oldName);
+        Path destFolderName = Paths.get(newName);
+        File sourceDirectory = new File(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(sourceFolderName).toString());
+        File destDirectory = new File(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(destFolderName).toString());
+        sourceDirectory.renameTo(destDirectory);
+    }
+
+    public ImageData renameImageFolder(int imageDataID, String newFolder) throws ImageDataCustomException {
+        Optional<ImageData> imageDataOptional = imageDataRepository.findById(imageDataID);
+        if (imageDataOptional.isEmpty()) {
+            throw new ImageDataCustomException(
+                    "Image Not Found With ID: " + imageDataID,
+                    DataUtils.ERROR_IMAGE_DATA_NOT_FOUND
+            );
+        }
+        ImageData imageData = imageDataOptional.get();
+        String[] resultSplit = imageData.getImageUrl().split("/");
+        String newImageUrl = "/images/" + newFolder + "/" + resultSplit[resultSplit.length - 1];
+        imageData.setImageUrl(newImageUrl);
+        return imageDataRepository.save(imageData);
+    }
+
 }
