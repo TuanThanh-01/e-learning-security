@@ -27,10 +27,4 @@ public class Comment {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "vote_comment",
-            joinColumns = @JoinColumn(name = "comment_id"),
-            inverseJoinColumns = @JoinColumn(name = "vote_id")
-    )
-    private List<Vote> votes;
 }

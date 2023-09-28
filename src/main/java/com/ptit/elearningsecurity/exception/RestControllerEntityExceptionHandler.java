@@ -32,4 +32,12 @@ public class RestControllerEntityExceptionHandler extends ResponseEntityExceptio
                 .setErrorMessage(exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(TopicCustomException.class)
+    public ResponseEntity<ErrorResponse> handleTopicException(TopicCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
