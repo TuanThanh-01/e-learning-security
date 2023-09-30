@@ -1,9 +1,9 @@
 package com.ptit.elearningsecurity.service.imageData;
 
 import com.ptit.elearningsecurity.common.DataUtils;
-import com.ptit.elearningsecurity.entity.ImageData;
+import com.ptit.elearningsecurity.entity.lecture.ImageLesson;
 import com.ptit.elearningsecurity.exception.ImageDataCustomException;
-import com.ptit.elearningsecurity.repository.ImageDataRepository;
+import com.ptit.elearningsecurity.repository.ImageLessonRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -24,57 +24,59 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImageService {
 
-    private final ImageDataRepository imageDataRepository;
+    private final ImageLessonRepository imageDataRepository;
     private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
 
-    public ImageData saveImage(String imageFolder, MultipartFile image) throws IOException {
+    public ImageLesson saveImage(String imageFolder, MultipartFile image) throws IOException {
         Path staticPath = Paths.get("static");
         Path imagePath = Paths.get("images");
+        Path lessonImage = Paths.get("lessonImage");
         Path folderName = Paths.get(imageFolder);
 
-        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(folderName))) {
-            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(folderName));
+        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(lessonImage).resolve(folderName))) {
+            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(lessonImage).resolve(folderName));
         }
 
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
-                .resolve(imagePath).resolve(folderName)
+                .resolve(imagePath).resolve(lessonImage).resolve(folderName)
                 .resolve(Objects.requireNonNull(image.getOriginalFilename()));
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
-        ImageData imageData = new ImageData();
+        ImageLesson imageData = new ImageLesson();
         imageData.setImageName(image.getOriginalFilename())
                 .setType(image.getContentType())
-                .setImageUrl("/images/" + imageFolder + "/" + image.getOriginalFilename());
+                .setImageUrl("/images/lessonImage/" + imageFolder + "/" + image.getOriginalFilename());
         return imageDataRepository.save(imageData);
     }
 
     public void updateImage(int imageDataID, String imageFolder, MultipartFile image) throws IOException, ImageDataCustomException {
-        Optional<ImageData> imageDataOptional = imageDataRepository.findById(imageDataID);
+        Optional<ImageLesson> imageDataOptional = imageDataRepository.findById(imageDataID);
         if (imageDataOptional.isEmpty()) {
             throw new ImageDataCustomException(
                     "Image Not Found With ID: " + imageDataID,
                     DataUtils.ERROR_IMAGE_DATA_NOT_FOUND
             );
         }
-        ImageData imageData = imageDataOptional.get();
+        ImageLesson imageData = imageDataOptional.get();
 
         Path staticPath = Paths.get("static");
         Path imagePath = Paths.get("images");
+        Path lessonImage = Paths.get("lessonImage");
         Path folderName = Paths.get(imageFolder);
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
-                .resolve(imagePath).resolve(folderName)
+                .resolve(imagePath).resolve(lessonImage).resolve(folderName)
                 .resolve(Objects.requireNonNull(image.getOriginalFilename()));
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
-        imageData.setImageUrl("/images/" + imageFolder + "/" + image.getOriginalFilename());
+        imageData.setImageUrl("/images/lessonImage/" + imageFolder + "/" + image.getOriginalFilename());
         imageData.setImageName(image.getOriginalFilename());
         imageDataRepository.save(imageData);
     }
 
-    public List<ImageData> saveAllImages(String imageFolder, List<MultipartFile> images) throws IOException {
-        List<ImageData> imageDataList = new ArrayList<>();
+    public List<ImageLesson> saveAllImages(String imageFolder, List<MultipartFile> images) throws IOException {
+        List<ImageLesson> imageDataList = new ArrayList<>();
         for (MultipartFile image : images) {
             imageDataList.add(saveImage(imageFolder, image));
         }
@@ -90,8 +92,10 @@ public class ImageService {
     public void deleteImageDirectory(String imageFolder) throws IOException {
         Path staticPath = Paths.get("static");
         Path imagePath = Paths.get("images");
+        Path lessonImage = Paths.get("lessonImage");
         Path folderName = Paths.get(imageFolder);
-        String pathDirectoryDelete = CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(folderName).toString();
+        String pathDirectoryDelete = CURRENT_FOLDER.resolve(staticPath)
+                .resolve(imagePath).resolve(lessonImage).resolve(folderName).toString();
         FileUtils.deleteDirectory(new File(pathDirectoryDelete));
     }
 
@@ -102,24 +106,27 @@ public class ImageService {
     public void updateImageDirectoryName(String oldName, String newName) {
         Path staticPath = Paths.get("static");
         Path imagePath = Paths.get("images");
+        Path lessonImage = Paths.get("lessonImage");
         Path sourceFolderName = Paths.get(oldName);
         Path destFolderName = Paths.get(newName);
-        File sourceDirectory = new File(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(sourceFolderName).toString());
-        File destDirectory = new File(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(destFolderName).toString());
+        File sourceDirectory = new File(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath)
+                .resolve(lessonImage).resolve(sourceFolderName).toString());
+        File destDirectory = new File(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath)
+                .resolve(lessonImage).resolve(destFolderName).toString());
         sourceDirectory.renameTo(destDirectory);
     }
 
-    public ImageData renameImageFolder(int imageDataID, String newFolder) throws ImageDataCustomException {
-        Optional<ImageData> imageDataOptional = imageDataRepository.findById(imageDataID);
+    public ImageLesson renameImageFolder(int imageDataID, String newFolder) throws ImageDataCustomException {
+        Optional<ImageLesson> imageDataOptional = imageDataRepository.findById(imageDataID);
         if (imageDataOptional.isEmpty()) {
             throw new ImageDataCustomException(
                     "Image Not Found With ID: " + imageDataID,
                     DataUtils.ERROR_IMAGE_DATA_NOT_FOUND
             );
         }
-        ImageData imageData = imageDataOptional.get();
+        ImageLesson imageData = imageDataOptional.get();
         String[] resultSplit = imageData.getImageUrl().split("/");
-        String newImageUrl = "/images/" + newFolder + "/" + resultSplit[resultSplit.length - 1];
+        String newImageUrl = "/images/lessonImage/" + newFolder + "/" + resultSplit[resultSplit.length - 1];
         imageData.setImageUrl(newImageUrl);
         return imageDataRepository.save(imageData);
     }

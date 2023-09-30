@@ -4,7 +4,7 @@ import com.ptit.elearningsecurity.common.DataUtils;
 import com.ptit.elearningsecurity.data.mapper.CategoryLessonMapper;
 import com.ptit.elearningsecurity.data.request.CategoryLessonRequest;
 import com.ptit.elearningsecurity.data.response.CategoryLessonResponse;
-import com.ptit.elearningsecurity.entity.CategoryLesson;
+import com.ptit.elearningsecurity.entity.lecture.CategoryLesson;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import com.ptit.elearningsecurity.repository.CategoryLessonRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.ptit.elearningsecurity.entity;
+package com.ptit.elearningsecurity.entity.lecture;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class Lesson {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_cover_id")
-    private ImageData coverImage;
+    private ImageLesson coverImage;
 
     @Column(name = "create_date")
     private Instant createdAt;
@@ -45,5 +45,5 @@ public class Lesson {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "lesson_id")
-    private List<ImageData> contentsImages;
+    private List<ImageLesson> contentsImages;
 }

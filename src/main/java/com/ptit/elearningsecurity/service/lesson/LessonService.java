@@ -5,9 +5,9 @@ import com.ptit.elearningsecurity.data.mapper.LessonMapper;
 import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonPageableResponse;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
-import com.ptit.elearningsecurity.entity.CategoryLesson;
-import com.ptit.elearningsecurity.entity.ImageData;
-import com.ptit.elearningsecurity.entity.Lesson;
+import com.ptit.elearningsecurity.entity.lecture.CategoryLesson;
+import com.ptit.elearningsecurity.entity.lecture.ImageLesson;
+import com.ptit.elearningsecurity.entity.lecture.Lesson;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import com.ptit.elearningsecurity.exception.ImageDataCustomException;
 import com.ptit.elearningsecurity.exception.LessonCustomException;
@@ -97,9 +97,9 @@ public class LessonService implements ILessonService {
 
 
     private LessonResponse mapImageDataToLessonResponse(Lesson lesson) {
-        ImageData coverImage = lesson.getCoverImage();
-        List<ImageData> contentsImages = lesson.getContentsImages();
-        List<String> listContentImageUrl = contentsImages.stream().map(ImageData::getImageUrl).toList();
+        ImageLesson coverImage = lesson.getCoverImage();
+        List<ImageLesson> contentsImages = lesson.getContentsImages();
+        List<String> listContentImageUrl = contentsImages.stream().map(ImageLesson::getImageUrl).toList();
         LessonResponse lessonResponse = lessonMapper.toResponse(lesson);
         lessonResponse.setCoverImageUrl(coverImage.getImageUrl());
         lessonResponse.setContentsImagesUrl(listContentImageUrl);
@@ -128,8 +128,8 @@ public class LessonService implements ILessonService {
             );
         }
         String lessonTitleEncoded = encodeBase64(lesson.getTitle());
-        ImageData coverImage = imageService.saveImage(lessonTitleEncoded, lessonRequest.getCoverImage());
-        List<ImageData> contentImageData = imageService.saveAllImages(lessonTitleEncoded, lessonRequest.getContentsImages());
+        ImageLesson coverImage = imageService.saveImage(lessonTitleEncoded, lessonRequest.getCoverImage());
+        List<ImageLesson> contentImageData = imageService.saveAllImages(lessonTitleEncoded, lessonRequest.getContentsImages());
         lesson.setCoverImage(coverImage);
         lesson.setContentsImages(contentImageData);
         lesson.setCategoryLesson(categoryLessonOptional.get());
@@ -151,8 +151,8 @@ public class LessonService implements ILessonService {
             // update image directory name and image url
             imageService.updateImageDirectoryName(titleEncode, encodeBase64(lessonRequest.getTitle()));
             lesson.setCoverImage(imageService.renameImageFolder(lesson.getCoverImage().getId(), encodeBase64(lessonRequest.getTitle())));
-            List<ImageData> contentImages = new ArrayList<>();
-            for (ImageData imageData : lesson.getContentsImages()) {
+            List<ImageLesson> contentImages = new ArrayList<>();
+            for (ImageLesson imageData : lesson.getContentsImages()) {
                 contentImages.add(imageService.renameImageFolder(imageData.getId(), encodeBase64(lessonRequest.getTitle())));
             }
             lesson.setContentsImages(contentImages);

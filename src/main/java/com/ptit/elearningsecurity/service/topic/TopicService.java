@@ -4,7 +4,7 @@ import com.ptit.elearningsecurity.common.DataUtils;
 import com.ptit.elearningsecurity.data.mapper.TopicMapper;
 import com.ptit.elearningsecurity.data.request.TopicRequest;
 import com.ptit.elearningsecurity.data.response.TopicResponse;
-import com.ptit.elearningsecurity.entity.Topic;
+import com.ptit.elearningsecurity.entity.discuss.Topic;
 import com.ptit.elearningsecurity.exception.TopicCustomException;
 import com.ptit.elearningsecurity.repository.TopicRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.ptit.elearningsecurity.repository;
 
-import com.ptit.elearningsecurity.entity.CategoryLesson;
-import com.ptit.elearningsecurity.entity.Lesson;
+import com.ptit.elearningsecurity.entity.lecture.CategoryLesson;
+import com.ptit.elearningsecurity.entity.lecture.Lesson;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

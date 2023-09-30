@@ -1,4 +1,4 @@
-package com.ptit.elearningsecurity.entity;
+package com.ptit.elearningsecurity.entity.discuss;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

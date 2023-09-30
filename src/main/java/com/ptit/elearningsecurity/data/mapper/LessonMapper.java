@@ -2,7 +2,7 @@ package com.ptit.elearningsecurity.data.mapper;
 
 import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
-import com.ptit.elearningsecurity.entity.Lesson;
+import com.ptit.elearningsecurity.entity.lecture.Lesson;
 import org.mapstruct.*;
 
 import java.time.Instant;

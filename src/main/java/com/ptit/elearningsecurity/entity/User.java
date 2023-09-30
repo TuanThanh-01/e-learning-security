@@ -1,5 +1,7 @@
 package com.ptit.elearningsecurity.entity;
 
+import com.ptit.elearningsecurity.entity.discuss.Comment;
+import com.ptit.elearningsecurity.entity.discuss.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,17 +16,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class Topic {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "name")
-    private String name;
-    @Column(name = "created_at")
+    private String firstname;
+    private String lastname;
+    private String email;
+    private String password;
+    private String avatar;
     private Instant createdAt;
-    @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @ManyToMany(mappedBy = "topics")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private List<Comment> comments;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     private List<Post> posts;
 }
