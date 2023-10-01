@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.entity.discuss;
 
+import com.ptit.elearningsecurity.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,12 +8,14 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
+@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +28,17 @@ public class Comment {
     private Instant createdAt;
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "comment_id")
+    private List<ImageComment> imageComments;
 
 }

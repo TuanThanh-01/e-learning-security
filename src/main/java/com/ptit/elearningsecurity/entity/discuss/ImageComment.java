@@ -11,8 +11,8 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-@Table(name = "image_post")
-public class ImagePost {
+@Table(name = "image_comment")
+public class ImageComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

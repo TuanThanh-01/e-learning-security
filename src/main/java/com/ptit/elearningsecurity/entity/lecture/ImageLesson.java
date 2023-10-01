@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
+@Table(name = "image_lesson")
 public class ImageLesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

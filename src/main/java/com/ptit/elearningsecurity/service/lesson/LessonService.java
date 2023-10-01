@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
+import static com.ptit.elearningsecurity.common.DataUtils.encodeBase64;
+
 @Service
 @RequiredArgsConstructor
 public class LessonService implements ILessonService {
@@ -51,10 +53,7 @@ public class LessonService implements ILessonService {
     public LessonPageableResponse getAllLessonByCategoryName(String categoryName, Pageable pageable) throws CategoryLessonCustomException {
         Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findByCategoryName(categoryName);
         if(categoryLessonOptional.isEmpty()) {
-            throw new CategoryLessonCustomException(
-                    "Category Lesson Not Found With Name: " + categoryName,
-                    DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
-            );
+            throw new CategoryLessonCustomException("Category Lesson Not Found", DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND);
         }
         Page<Lesson> lessonPage = lessonRepository.findByCategoryLesson(categoryLessonOptional.get(), pageable);
         List<Lesson> lessons = lessonPage.getContent();
@@ -87,10 +86,7 @@ public class LessonService implements ILessonService {
     public LessonResponse findById(int lessonID) throws LessonCustomException {
         Optional<Lesson> lessonOptional = lessonRepository.findById(lessonID);
         if (lessonOptional.isEmpty()) {
-            throw new LessonCustomException(
-                    "Lesson Not Found With ID: " + lessonID,
-                    DataUtils.ERROR_LESSON_NOT_FOUND
-            );
+            throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
         }
         return mapImageDataToLessonResponse(lessonOptional.get());
     }
@@ -106,9 +102,6 @@ public class LessonService implements ILessonService {
         return lessonResponse;
     }
 
-    public String encodeBase64(String message) {
-        return Base64.getEncoder().encodeToString(message.getBytes());
-    }
 
     @Override
     public LessonResponse createLesson(LessonRequest lessonRequest) throws CategoryLessonCustomException, IOException, LessonCustomException {
@@ -116,10 +109,7 @@ public class LessonService implements ILessonService {
         Optional<CategoryLesson> categoryLessonOptional =
                 categoryLessonRepository.findById(lessonRequest.getCategoryLessonID());
         if (categoryLessonOptional.isEmpty()) {
-            throw new CategoryLessonCustomException(
-                    "Category Lesson Not Found With ID: " + lessonRequest.getCategoryLessonID(),
-                    DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
-            );
+            throw new CategoryLessonCustomException("Category Lesson Not Found", DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND);
         }
         if(lessonRepository.existsByTitle(lessonRequest.getTitle())) {
             throw new LessonCustomException(
@@ -136,14 +126,12 @@ public class LessonService implements ILessonService {
         return mapImageDataToLessonResponse(lessonRepository.save(lesson));
     }
 
+    // kiểm tra lại chức năng cập nhật ảnh
     @Override
     public LessonResponse updateLesson(LessonRequest lessonRequest, int lessonID) throws CategoryLessonCustomException, IOException, ImageDataCustomException, LessonCustomException {
         Optional<Lesson> lessonOptional = lessonRepository.findById(lessonID);
         if (lessonOptional.isEmpty()) {
-            throw new LessonCustomException(
-                    "Lesson Not Found With ID: " + lessonID,
-                    DataUtils.ERROR_LESSON_NOT_FOUND
-            );
+            throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
         }
         Lesson lesson = lessonOptional.get();
         String titleEncode = encodeBase64(lesson.getTitle());
@@ -190,10 +178,7 @@ public class LessonService implements ILessonService {
             Optional<CategoryLesson> categoryLessonOptional =
                     categoryLessonRepository.findById(lessonRequest.getCategoryLessonID());
             if (categoryLessonOptional.isEmpty()) {
-                throw new CategoryLessonCustomException(
-                        "Category Lesson Not Found With ID: " + lessonRequest.getCategoryLessonID(),
-                        DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
-                );
+                throw new CategoryLessonCustomException("Category Lesson Not Found", DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND);
             }
             lesson.setCategoryLesson(categoryLessonOptional.get());
         }
@@ -206,10 +191,7 @@ public class LessonService implements ILessonService {
     public void deleteLesson(int lessonID) throws LessonCustomException, IOException {
         Optional<Lesson> lessonOptional = lessonRepository.findById(lessonID);
         if (lessonOptional.isEmpty()) {
-            throw new LessonCustomException(
-                    "Lesson Not Found With ID: " + lessonID,
-                    DataUtils.ERROR_LESSON_NOT_FOUND
-            );
+            throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
         }
         Lesson lesson = lessonOptional.get();
         imageService.deleteImageDirectory(encodeBase64(lesson.getTitle()));

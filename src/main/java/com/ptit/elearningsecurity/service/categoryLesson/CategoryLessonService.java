@@ -32,7 +32,7 @@ public class CategoryLessonService implements ICategoryLessonService{
         Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findById(categoryLessonID);
         if(categoryLessonOptional.isEmpty()) {
             throw new CategoryLessonCustomException(
-                    "Category Lesson Not Found With ID: " + categoryLessonID,
+                    "Category Lesson Not Found",
                     DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
             );
         }
@@ -52,7 +52,7 @@ public class CategoryLessonService implements ICategoryLessonService{
         Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findById(categoryLessonID);
         if(categoryLessonOptional.isEmpty()) {
             throw new CategoryLessonCustomException(
-                    "Category Lesson Not Found With ID: " + categoryLessonID,
+                    "Category Lesson Not Found",
                     DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
             );
         }
@@ -73,7 +73,7 @@ public class CategoryLessonService implements ICategoryLessonService{
         Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findById(categoryLessonID);
         if(categoryLessonOptional.isEmpty()) {
             throw new CategoryLessonCustomException(
-                    "Category Lesson Not Found With ID: " + categoryLessonID,
+                    "Category Lesson Not Found",
                     DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
             );
         }

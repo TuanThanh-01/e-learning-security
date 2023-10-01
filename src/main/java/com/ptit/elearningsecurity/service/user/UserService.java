@@ -49,10 +49,7 @@ public class UserService implements IUserService{
     public UserResponse findByID(int userID) throws UserCustomException {
         Optional<User> userOptional = userRepository.findById(userID);
         if (userOptional.isEmpty()) {
-            throw new UserCustomException(
-                    "User Not Found With ID: " + userID,
-                    DataUtils.ERROR_USER_NOT_FOUND
-            );
+            throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         return userMapper.toResponse(userOptional.get());
     }
@@ -71,10 +68,7 @@ public class UserService implements IUserService{
     public UserResponse update(int userID, UserRequest userRequest) throws UserCustomException {
         Optional<User> userOptional = userRepository.findById(userID);
         if (userOptional.isEmpty()) {
-            throw new UserCustomException(
-                    "User Not Found With ID: " + userID,
-                    DataUtils.ERROR_USER_NOT_FOUND
-            );
+            throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         User user = userOptional.get();
         if(Objects.nonNull(userRequest.getFirstname()) && !"".equalsIgnoreCase(userRequest.getFirstname())) {
@@ -94,10 +88,7 @@ public class UserService implements IUserService{
     public UserResponse uploadAvatar(int userID, MultipartFile image) throws UserCustomException, IOException {
         Optional<User> userOptional = userRepository.findById(userID);
         if (userOptional.isEmpty()) {
-            throw new UserCustomException(
-                    "User Not Found With ID: " + userID,
-                    DataUtils.ERROR_USER_NOT_FOUND
-            );
+            throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         User user = userOptional.get();
 
@@ -124,10 +115,7 @@ public class UserService implements IUserService{
     public void delete(int userID) throws UserCustomException {
         Optional<User> userOptional = userRepository.findById(userID);
         if (userOptional.isEmpty()) {
-            throw new UserCustomException(
-                    "User Not Found With ID: " + userID,
-                    DataUtils.ERROR_USER_NOT_FOUND
-            );
+            throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         userRepository.delete(userOptional.get());
     }

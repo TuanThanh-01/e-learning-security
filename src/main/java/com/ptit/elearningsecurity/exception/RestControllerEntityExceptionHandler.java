@@ -48,4 +48,20 @@ public class RestControllerEntityExceptionHandler extends ResponseEntityExceptio
                 .setErrorMessage(exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(PostCustomException.class)
+    public ResponseEntity<ErrorResponse> handlePostException(PostCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CommentCustomException.class)
+    public ResponseEntity<ErrorResponse> handleCommentException(CommentCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }

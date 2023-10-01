@@ -31,10 +31,7 @@ public class TopicService implements ITopicService{
     public TopicResponse getById(int topicID) throws TopicCustomException {
         Optional<Topic> topicOptional = topicRepository.findById(topicID);
         if(topicOptional.isEmpty()) {
-            throw new TopicCustomException(
-                    "Topic Not Found With ID: " + topicID,
-                    DataUtils.ERROR_TOPIC_NOT_FOUND
-            );
+            throw new TopicCustomException("Topic Not Found", DataUtils.ERROR_TOPIC_NOT_FOUND);
         }
         return topicMapper.toResponse(topicOptional.get());
     }
@@ -50,10 +47,7 @@ public class TopicService implements ITopicService{
     public TopicResponse update(TopicRequest topicRequest, int topicID) throws TopicCustomException {
         Optional<Topic> topicOptional = topicRepository.findById(topicID);
         if(topicOptional.isEmpty()) {
-            throw new TopicCustomException(
-                    "Topic Not Found With ID: " + topicID,
-                    DataUtils.ERROR_TOPIC_NOT_FOUND
-            );
+            throw new TopicCustomException("Topic Not Found", DataUtils.ERROR_TOPIC_NOT_FOUND);
         }
         Topic topic = topicOptional.get();
         if(Objects.nonNull(topicRequest.getName()) && !"".equalsIgnoreCase(topic.getName())) {
@@ -69,10 +63,7 @@ public class TopicService implements ITopicService{
     public void delete(int topicID) throws TopicCustomException {
         Optional<Topic> topicOptional = topicRepository.findById(topicID);
         if(topicOptional.isEmpty()) {
-            throw new TopicCustomException(
-                    "Topic Not Found With ID: " + topicID,
-                    DataUtils.ERROR_TOPIC_NOT_FOUND
-            );
+            throw new TopicCustomException("Topic Not Found", DataUtils.ERROR_TOPIC_NOT_FOUND);
         }
         topicRepository.delete(topicOptional.get());
     }

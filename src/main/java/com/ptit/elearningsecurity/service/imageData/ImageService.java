@@ -53,10 +53,7 @@ public class ImageService {
     public void updateImage(int imageDataID, String imageFolder, MultipartFile image) throws IOException, ImageDataCustomException {
         Optional<ImageLesson> imageDataOptional = imageDataRepository.findById(imageDataID);
         if (imageDataOptional.isEmpty()) {
-            throw new ImageDataCustomException(
-                    "Image Not Found With ID: " + imageDataID,
-                    DataUtils.ERROR_IMAGE_DATA_NOT_FOUND
-            );
+            throw new ImageDataCustomException("Image Not Found", DataUtils.ERROR_IMAGE_DATA_NOT_FOUND);
         }
         ImageLesson imageData = imageDataOptional.get();
 
@@ -77,10 +74,28 @@ public class ImageService {
 
     public List<ImageLesson> saveAllImages(String imageFolder, List<MultipartFile> images) throws IOException {
         List<ImageLesson> imageDataList = new ArrayList<>();
-        for (MultipartFile image : images) {
-            imageDataList.add(saveImage(imageFolder, image));
+        Path staticPath = Paths.get("static");
+        Path imagePath = Paths.get("images");
+        Path lessonImage = Paths.get("lessonImage");
+        Path folderName = Paths.get(imageFolder);
+
+        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(lessonImage).resolve(folderName))) {
+            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(lessonImage).resolve(folderName));
         }
-        return imageDataList;
+        for (MultipartFile image : images) {
+            Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
+                    .resolve(imagePath).resolve(lessonImage).resolve(folderName)
+                    .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+            try(OutputStream os = Files.newOutputStream(imageFilePath)){
+                os.write(image.getBytes());
+            }
+            ImageLesson imageData = new ImageLesson();
+            imageData.setImageName(image.getOriginalFilename())
+                    .setType(image.getContentType())
+                    .setImageUrl("/images/lessonImage/" + imageFolder + "/" + image.getOriginalFilename());
+            imageDataList.add(imageData);
+        }
+        return imageDataRepository.saveAll(imageDataList);
     }
 
     public void deleteImageResource(String imageUrl) throws IOException {
@@ -119,10 +134,7 @@ public class ImageService {
     public ImageLesson renameImageFolder(int imageDataID, String newFolder) throws ImageDataCustomException {
         Optional<ImageLesson> imageDataOptional = imageDataRepository.findById(imageDataID);
         if (imageDataOptional.isEmpty()) {
-            throw new ImageDataCustomException(
-                    "Image Not Found With ID: " + imageDataID,
-                    DataUtils.ERROR_IMAGE_DATA_NOT_FOUND
-            );
+            throw new ImageDataCustomException("Image Not Found", DataUtils.ERROR_IMAGE_DATA_NOT_FOUND);
         }
         ImageLesson imageData = imageDataOptional.get();
         String[] resultSplit = imageData.getImageUrl().split("/");
