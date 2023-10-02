@@ -6,7 +6,6 @@ import com.ptit.elearningsecurity.data.request.PostRequest;
 import com.ptit.elearningsecurity.data.response.PostPageableResponse;
 import com.ptit.elearningsecurity.data.response.PostResponse;
 import com.ptit.elearningsecurity.entity.User;
-import com.ptit.elearningsecurity.entity.discuss.ImagePost;
 import com.ptit.elearningsecurity.entity.discuss.Post;
 import com.ptit.elearningsecurity.entity.discuss.Topic;
 import com.ptit.elearningsecurity.exception.PostCustomException;
@@ -15,13 +14,17 @@ import com.ptit.elearningsecurity.exception.UserCustomException;
 import com.ptit.elearningsecurity.repository.PostRepository;
 import com.ptit.elearningsecurity.repository.TopicRepository;
 import com.ptit.elearningsecurity.repository.UserRepository;
-import com.ptit.elearningsecurity.service.imageData.ImagePostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +32,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.ptit.elearningsecurity.common.DataUtils.encodeBase64;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +40,9 @@ public class PostService implements IPostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
-    private final ImagePostService imagePostService;
     private final PostMapper postMapper;
+    private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
+
 
     @Override
     public PostPageableResponse findAllPost(Pageable pageable) {
@@ -48,7 +51,6 @@ public class PostService implements IPostService {
         List<PostResponse> postResponseList = new ArrayList<>();
         for (Post post : posts) {
             PostResponse postResponse = postMapper.toResponse(post);
-            postResponse.setImageUrl(getAllImageUrl(post.getImagePosts()));
             postResponseList.add(postResponse);
         }
         PostPageableResponse postPageableResponse = new PostPageableResponse();
@@ -66,16 +68,25 @@ public class PostService implements IPostService {
             throw new PostCustomException("Post Not Found", DataUtils.ERROR_POST_NOT_FOUND);
         }
         Post post = postOptional.get();
-        PostResponse postResponse = postMapper.toResponse(post);
-        postResponse.setImageUrl(getAllImageUrl(post.getImagePosts()));
-        return null;
+        return postMapper.toResponse(post);
     }
 
+    private String uploadImage(MultipartFile image) throws IOException {
+        Path staticPath = Paths.get("static");
+        Path imagePath = Paths.get("images");
+        Path postPath = Paths.get("post");
 
-    public List<String> getAllImageUrl(List<ImagePost> imagePosts) {
-        return imagePosts.stream()
-                .map(ImagePost::getImageUrl)
-                .collect(Collectors.toList());
+        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(postPath))) {
+            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(postPath));
+        }
+
+        Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
+                .resolve(imagePath).resolve(postPath)
+                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+        try(OutputStream os = Files.newOutputStream(imageFilePath)){
+            os.write(image.getBytes());
+        }
+        return "/images/post/" + image.getOriginalFilename();
     }
 
     @Override
@@ -99,14 +110,14 @@ public class PostService implements IPostService {
             throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         post.setUser(userOptional.get());
-        List<ImagePost> imagePostList = imagePostService.saveImage(encodeBase64(post.getTitle()), postRequest.getPostImages());
-        post.setImagePosts(imagePostList);
+        if(Objects.nonNull(postRequest.getPostImages())) {
+            post.setImageUrl(uploadImage(postRequest.getPostImages()));
+        }
         return postMapper.toResponse(postRepository.save(post));
     }
 
-    // bổ sung lại chức năng cập nhật ảnh
     @Override
-    public PostResponse updatePost(int postID, PostRequest postRequest) throws PostCustomException, TopicCustomException, UserCustomException {
+    public PostResponse updatePost(int postID, PostRequest postRequest) throws PostCustomException, TopicCustomException, UserCustomException, IOException {
         Optional<Post> postOptional = postRepository.findById(postID);
         if (postOptional.isEmpty()) {
             throw new PostCustomException("Post Not Found", DataUtils.ERROR_POST_NOT_FOUND);
@@ -141,6 +152,9 @@ public class PostService implements IPostService {
                         );
             }
             post.setUser(optionalUser.get());
+        }
+        if(Objects.nonNull(postRequest.getPostImages())) {
+            post.setImageUrl(uploadImage(postRequest.getPostImages()));
         }
         post.setUpdatedAt(Instant.now());
         return postMapper.toResponse(postRepository.save(post));

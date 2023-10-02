@@ -45,7 +45,7 @@ public class PostController {
             @RequestParam("content") String content,
             @RequestParam("listTopicID")List<Integer> listTopicID,
             @RequestParam("userID") int userID,
-            @RequestParam("postImages") List<MultipartFile> postImages
+            @RequestParam("postImages") MultipartFile postImages
             ) throws TopicCustomException, UserCustomException, IOException {
         PostRequest postRequest = new PostRequest();
         postRequest.setTitle(title)
@@ -62,9 +62,9 @@ public class PostController {
             @RequestParam("content") String content,
             @RequestParam("listTopicID")List<Integer> listTopicID,
             @RequestParam("userID") int userID,
-            @RequestParam("postImages") List<MultipartFile> postImages,
+            @RequestParam("postImages") MultipartFile postImages,
             @PathVariable("id") int postID
-    ) throws PostCustomException, TopicCustomException, UserCustomException {
+    ) throws PostCustomException, TopicCustomException, UserCustomException, IOException {
         PostRequest postRequest = new PostRequest();
         postRequest.setTitle(title)
                 .setContent(content)

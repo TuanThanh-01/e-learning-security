@@ -14,7 +14,7 @@ public interface IPostService {
     PostPageableResponse findAllPost(Pageable pageable);
     PostResponse findPostById(int postId) throws PostCustomException;
     PostResponse createPost(PostRequest postRequest) throws UserCustomException, IOException, TopicCustomException;
-    PostResponse updatePost(int postID, PostRequest postRequest) throws PostCustomException, TopicCustomException, UserCustomException;
+    PostResponse updatePost(int postID, PostRequest postRequest) throws PostCustomException, TopicCustomException, UserCustomException, IOException;
 
     void deletePost(int postID) throws PostCustomException;
 }

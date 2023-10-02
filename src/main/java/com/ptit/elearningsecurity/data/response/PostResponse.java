@@ -16,5 +16,5 @@ public class PostResponse {
     @JsonProperty("user_create")
     private UserResponse userCreate;
     @JsonProperty("image_url")
-    private List<String> imageUrl;
+    private String imageUrl;
 }

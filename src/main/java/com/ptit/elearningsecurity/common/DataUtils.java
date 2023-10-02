@@ -12,6 +12,7 @@ public class DataUtils {
     public static final String ERROR_USER_NOT_FOUND = "ERROR_USER_NOT_FOUND";
     public static final String ERROR_USER_EXIST = "ERROR_USER_EXIST";
     public static final String ERROR_POST_NOT_FOUND = "ERROR_POST_NOT_FOUND";
+    public static final String ERROR_COMMENT_NOT_FOUND = "ERROR_COMMENT_NOT_FOUND";
 
     public static String encodeBase64(String message) {
         return Base64.getEncoder().encodeToString(message.getBytes());

@@ -24,6 +24,8 @@ public class Comment {
     private String context;
     @Column(name = "parent_id")
     private int parentId;
+    @Column(name = "image_url")
+    private String imageUrl;
     @Column(name = "created_at")
     private Instant createdAt;
     @Column(name = "updated_at")
@@ -37,8 +39,5 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "comment_id")
-    private List<ImageComment> imageComments;
 
 }

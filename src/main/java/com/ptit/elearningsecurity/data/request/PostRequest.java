@@ -13,5 +13,5 @@ public class PostRequest {
     private String content;
     private List<Integer> listTopicID;
     private int userID;
-    private List<MultipartFile> postImages;
+    private MultipartFile postImages;
 }

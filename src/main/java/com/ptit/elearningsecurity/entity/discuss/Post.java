@@ -27,6 +27,8 @@ public class Post {
     private Instant createdAt;
     @Column(name = "updated_atd")
     private Instant updatedAt;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "post_topic",
@@ -42,7 +44,4 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id")
-    private List<ImagePost> imagePosts;
 }

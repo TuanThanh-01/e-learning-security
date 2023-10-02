@@ -11,11 +11,12 @@ import java.util.List;
 public class CommentResponse {
     private int id;
     private String context;
-    private int parentID;
+    @JsonProperty("parent_id")
+    private int parentId;
     @JsonProperty("user_comment")
     private UserResponse userResponse;
     @JsonProperty("post_id")
     private int postID;
     @JsonProperty("image_url")
-    private List<String> imageUrl;
+    private String imageUrl;
 }
