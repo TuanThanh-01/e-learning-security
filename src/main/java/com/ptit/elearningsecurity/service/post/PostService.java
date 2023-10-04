@@ -55,7 +55,7 @@ public class PostService implements IPostService {
         }
         PostPageableResponse postPageableResponse = new PostPageableResponse();
         postPageableResponse.setData(postResponseList)
-                .setTotalItems(postPageableResponse.getTotalItems())
+                .setTotalItems(postPage.getTotalElements())
                 .setCurrentPage(postPage.getNumber())
                 .setTotalPages(postPage.getTotalPages());
         return postPageableResponse;

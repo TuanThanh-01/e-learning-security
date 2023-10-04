@@ -45,7 +45,7 @@ public class PostController {
             @RequestParam("content") String content,
             @RequestParam("listTopicID")List<Integer> listTopicID,
             @RequestParam("userID") int userID,
-            @RequestParam("postImages") MultipartFile postImages
+            @RequestParam(value = "postImages", required = false) MultipartFile postImages
             ) throws TopicCustomException, UserCustomException, IOException {
         PostRequest postRequest = new PostRequest();
         postRequest.setTitle(title)
@@ -58,11 +58,11 @@ public class PostController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<PostResponse> updatePost(
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("listTopicID")List<Integer> listTopicID,
-            @RequestParam("userID") int userID,
-            @RequestParam("postImages") MultipartFile postImages,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "listTopicID", required = false)List<Integer> listTopicID,
+            @RequestParam(value = "userID", required = false) int userID,
+            @RequestParam(value = "postImages", required = false) MultipartFile postImages,
             @PathVariable("id") int postID
     ) throws PostCustomException, TopicCustomException, UserCustomException, IOException {
         PostRequest postRequest = new PostRequest();

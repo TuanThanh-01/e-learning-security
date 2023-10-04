@@ -25,7 +25,7 @@ public class Post {
     private String content;
     @Column(name = "created_at")
     private Instant createdAt;
-    @Column(name = "updated_atd")
+    @Column(name = "updated_at")
     private Instant updatedAt;
     @Column(name = "image_url")
     private String imageUrl;
