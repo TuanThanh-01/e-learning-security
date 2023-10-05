@@ -15,9 +15,11 @@ import com.ptit.elearningsecurity.repository.CommentRepository;
 import com.ptit.elearningsecurity.repository.PostRepository;
 import com.ptit.elearningsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -84,7 +86,7 @@ public class CommentService implements ICommentService{
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
-        return "/images/post/" + image.getOriginalFilename();
+        return "/images/comment/" + image.getOriginalFilename();
     }
 
     @Override
@@ -125,12 +127,22 @@ public class CommentService implements ICommentService{
             comment.setContext(commentRequest.getContext());
         }
         if(Objects.nonNull(commentRequest.getCommentImages())) {
+            if(Objects.nonNull(comment.getImageUrl())) {
+                deleteImageResource(comment.getImageUrl());
+            }
             comment.setImageUrl(uploadImage(commentRequest.getCommentImages()));
         }
         comment.setUpdatedAt(Instant.now());
+        commentRepository.save(comment);
         CommentResponse commentResponse = commentMapper.toResponse(comment);
         commentResponse.setPostID(comment.getPost().getId());
         return commentResponse;
+    }
+
+    private void deleteImageResource(String imageUrl) throws IOException {
+        Path staticPath = Paths.get("static");
+        String imageUrlPath = CURRENT_FOLDER.resolve(staticPath) + imageUrl;
+        FileUtils.delete(new File(imageUrlPath));
     }
 
     @Override

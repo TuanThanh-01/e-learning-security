@@ -35,9 +35,9 @@ public class CommentController {
     @PostMapping("/create")
     public ResponseEntity<CommentResponse> createComment(
             @RequestParam("context") String context,
-            @RequestParam("parentId") int parentId,
-            @RequestParam("userId") int userId,
-            @RequestParam("postId") int postId,
+            @RequestParam(value = "parentId", required = false) Integer parentId,
+            @RequestParam("userId") Integer userId,
+            @RequestParam("postId") Integer postId,
             @RequestParam(value = "commentImages", required = false) MultipartFile commentImages)
             throws PostCustomException, UserCustomException, IOException {
         CommentRequest commentRequest = new CommentRequest();
@@ -52,9 +52,9 @@ public class CommentController {
     @PutMapping("/update/{id}")
     public ResponseEntity<CommentResponse> updateComment(
             @RequestParam(value = "context", required = false) String context,
-            @RequestParam(value = "parentId", required = false) int parentId,
-            @RequestParam(value = "userId", required = false) int userId,
-            @RequestParam(value = "postId", required = false) int postId,
+            @RequestParam(value = "parentId", required = false) Integer parentId,
+            @RequestParam(value = "userId", required = false) Integer userId,
+            @RequestParam(value = "postId", required = false) Integer postId,
             @RequestParam(value = "commentImages", required = false) MultipartFile commentImages,
             @PathVariable(value = "id", required = false) int cmtId
     ) throws CommentCustomException, IOException {

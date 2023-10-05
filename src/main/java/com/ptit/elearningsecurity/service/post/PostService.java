@@ -15,11 +15,13 @@ import com.ptit.elearningsecurity.repository.PostRepository;
 import com.ptit.elearningsecurity.repository.TopicRepository;
 import com.ptit.elearningsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -117,7 +119,7 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public PostResponse updatePost(int postID, PostRequest postRequest) throws PostCustomException, TopicCustomException, UserCustomException, IOException {
+    public PostResponse updatePost(int postID, PostRequest postRequest) throws PostCustomException, TopicCustomException, IOException {
         Optional<Post> postOptional = postRepository.findById(postID);
         if (postOptional.isEmpty()) {
             throw new PostCustomException("Post Not Found", DataUtils.ERROR_POST_NOT_FOUND);
@@ -143,21 +145,20 @@ public class PostService implements IPostService {
                 );
             }
         }
-        if(postRequest.getUserID() > 0) {
-            Optional<User> optionalUser = userRepository.findById(postRequest.getUserID());
-            if(optionalUser.isEmpty()) {
-                throw new UserCustomException(
-                        "User Not Found With ID: " + postRequest.getUserID(),
-                        DataUtils.ERROR_USER_NOT_FOUND
-                        );
-            }
-            post.setUser(optionalUser.get());
-        }
         if(Objects.nonNull(postRequest.getPostImages())) {
+            if(Objects.nonNull(post.getImageUrl())) {
+                deleteImageResource(post.getImageUrl());
+            }
             post.setImageUrl(uploadImage(postRequest.getPostImages()));
         }
         post.setUpdatedAt(Instant.now());
         return postMapper.toResponse(postRepository.save(post));
+    }
+
+    private void deleteImageResource(String imageUrl) throws IOException {
+        Path staticPath = Paths.get("static");
+        String imageUrlPath = CURRENT_FOLDER.resolve(staticPath) + imageUrl;
+        FileUtils.delete(new File(imageUrlPath));
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Comment {
     @Column(name = "context", columnDefinition = "TEXT")
     private String context;
     @Column(name = "parent_id")
-    private int parentId;
+    private Integer parentId;
     @Column(name = "image_url")
     private String imageUrl;
     @Column(name = "created_at")

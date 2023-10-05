@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Accessors(chain = true)
 public class CommentRequest {
     private String context;
-    private int parentId;
-    private int userID;
-    private int postID;
+    private Integer parentId;
+    private Integer userID;
+    private Integer postID;
     private MultipartFile commentImages;
 }

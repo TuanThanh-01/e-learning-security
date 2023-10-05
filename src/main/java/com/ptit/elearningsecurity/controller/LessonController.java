@@ -63,7 +63,7 @@ public class LessonController {
             @RequestParam("content") String content,
             @RequestParam("coverImage") MultipartFile coverImage,
             @RequestParam("contentsImages") List<MultipartFile> contentsImages,
-            @RequestParam("categoryLessonID") int categoryLessonID
+            @RequestParam(value = "categoryLessonID", required = false) Integer categoryLessonID
     ) throws CategoryLessonCustomException, IOException, LessonCustomException {
         LessonRequest lessonRequest = new LessonRequest();
         lessonRequest.setTitle(title)
@@ -82,7 +82,7 @@ public class LessonController {
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "coverImage", required = false) MultipartFile coverImage,
             @RequestParam(value = "contentsImages", required = false) List<MultipartFile> contentsImages,
-            @RequestParam(value = "categoryLessonID", required = false, defaultValue = "0") int categoryLessonID,
+            @RequestParam(value = "categoryLessonID", required = false, defaultValue = "0") Integer categoryLessonID,
             @PathVariable("id") int lessonID
     ) throws CategoryLessonCustomException, IOException, ImageDataCustomException, LessonCustomException {
         LessonRequest lessonRequest = new LessonRequest();
