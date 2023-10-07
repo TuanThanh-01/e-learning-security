@@ -50,11 +50,7 @@ public class PostService implements IPostService {
     public PostPageableResponse findAllPost(Pageable pageable) {
         Page<Post> postPage = postRepository.findAll(pageable);
         List<Post> posts = postPage.getContent();
-        List<PostResponse> postResponseList = new ArrayList<>();
-        for (Post post : posts) {
-            PostResponse postResponse = postMapper.toResponse(post);
-            postResponseList.add(postResponse);
-        }
+        List<PostResponse> postResponseList = postMapper.toPostResponses(posts);
         PostPageableResponse postPageableResponse = new PostPageableResponse();
         postPageableResponse.setData(postResponseList)
                 .setTotalItems(postPage.getTotalElements())
