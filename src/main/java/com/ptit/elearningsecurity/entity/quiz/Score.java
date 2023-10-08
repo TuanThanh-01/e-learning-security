@@ -18,14 +18,13 @@ public class Score {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int score;
+    private Integer score;
     private Instant createdAt;
     private Instant updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;

@@ -69,7 +69,9 @@ public class QuizService implements IQuizService{
     @Override
     public QuizResponse createQuiz(QuizRequest quizRequest) throws IOException {
         Quiz quiz = quizMapper.toPojo(quizRequest);
-        quiz.setImageCover(uploadImage(quizRequest.getImage()));
+        if(quizRequest.getImage() != null) {
+            quiz.setImageCover(uploadImage(quizRequest.getImage()));
+        }
         return quizMapper.toResponse(quizRepository.save(quiz));
     }
 

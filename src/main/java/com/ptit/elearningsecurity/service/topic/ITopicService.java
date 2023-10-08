@@ -7,7 +7,6 @@ import com.ptit.elearningsecurity.exception.TopicCustomException;
 import java.util.List;
 
 public interface ITopicService {
-
     List<TopicResponse> getAll();
     TopicResponse getById(int topicID) throws TopicCustomException;
     TopicResponse create(TopicRequest topicRequest);

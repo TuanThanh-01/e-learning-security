@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -41,12 +42,29 @@ public class QuizController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<QuizResponse> createQuiz(@RequestBody QuizRequest quizRequest) throws IOException {
+    public ResponseEntity<QuizResponse> createQuiz(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam(value = "image", required = false) MultipartFile image
+            ) throws IOException {
+        QuizRequest quizRequest = new QuizRequest();
+        quizRequest.setName(name)
+                .setDescription(description)
+                .setImage(image);
         return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuiz(quizRequest));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<QuizResponse> updateQuiz(@RequestBody QuizRequest quizRequest, @PathVariable("id") int quizId) throws QuizCustomException, IOException {
+    public ResponseEntity<QuizResponse> updateQuiz(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @PathVariable("id") int quizId
+    ) throws QuizCustomException, IOException {
+        QuizRequest quizRequest = new QuizRequest();
+        quizRequest.setName(name)
+                .setDescription(description)
+                .setImage(image);
         return ResponseEntity.status(HttpStatus.OK).body(quizService.updateQuiz(quizRequest, quizId));
     }
 

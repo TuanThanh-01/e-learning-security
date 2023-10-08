@@ -25,11 +25,9 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -80,13 +78,15 @@ public class CommentService implements ICommentService{
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(commentPath));
         }
 
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+        String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
                 .resolve(imagePath).resolve(commentPath)
-                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+                .resolve(imageName);
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
-        return "/images/comment/" + image.getOriginalFilename();
+        return "/images/comment/" + imageName;
     }
 
     @Override

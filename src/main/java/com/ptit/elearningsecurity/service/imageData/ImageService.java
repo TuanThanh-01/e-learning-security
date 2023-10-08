@@ -15,10 +15,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,16 +35,18 @@ public class ImageService {
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(lessonImage).resolve(folderName));
         }
 
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+        String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
                 .resolve(imagePath).resolve(lessonImage).resolve(folderName)
-                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+                .resolve(imageName);
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
         ImageLesson imageData = new ImageLesson();
-        imageData.setImageName(image.getOriginalFilename())
+        imageData.setImageName(imageName)
                 .setType(image.getContentType())
-                .setImageUrl("/images/lessonImage/" + imageFolder + "/" + image.getOriginalFilename());
+                .setImageUrl("/images/lessonImage/" + imageFolder + "/" + imageName);
         return imageDataRepository.save(imageData);
     }
 
@@ -61,14 +61,17 @@ public class ImageService {
         Path imagePath = Paths.get("images");
         Path lessonImage = Paths.get("lessonImage");
         Path folderName = Paths.get(imageFolder);
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+        String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
+
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
                 .resolve(imagePath).resolve(lessonImage).resolve(folderName)
-                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+                .resolve(imageName);
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
-        imageData.setImageUrl("/images/lessonImage/" + imageFolder + "/" + image.getOriginalFilename());
-        imageData.setImageName(image.getOriginalFilename());
+        imageData.setImageUrl("/images/lessonImage/" + imageFolder + "/" + imageName);
+        imageData.setImageName(imageName);
         imageDataRepository.save(imageData);
     }
 
@@ -83,16 +86,18 @@ public class ImageService {
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(lessonImage).resolve(folderName));
         }
         for (MultipartFile image : images) {
+            String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+            String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
             Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
                     .resolve(imagePath).resolve(lessonImage).resolve(folderName)
-                    .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+                    .resolve(imageName);
             try(OutputStream os = Files.newOutputStream(imageFilePath)){
                 os.write(image.getBytes());
             }
             ImageLesson imageData = new ImageLesson();
-            imageData.setImageName(image.getOriginalFilename())
+            imageData.setImageName(imageName)
                     .setType(image.getContentType())
-                    .setImageUrl("/images/lessonImage/" + imageFolder + "/" + image.getOriginalFilename());
+                    .setImageUrl("/images/lessonImage/" + imageFolder + "/" + imageName);
             imageDataList.add(imageData);
         }
         return imageDataRepository.saveAll(imageDataList);

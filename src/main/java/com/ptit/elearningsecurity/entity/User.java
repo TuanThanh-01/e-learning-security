@@ -2,6 +2,8 @@ package com.ptit.elearningsecurity.entity;
 
 import com.ptit.elearningsecurity.entity.discuss.Comment;
 import com.ptit.elearningsecurity.entity.discuss.Post;
+import com.ptit.elearningsecurity.entity.lecture.Progress;
+import com.ptit.elearningsecurity.entity.quiz.Score;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,4 +36,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Score> scores;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Progress progress;
 }

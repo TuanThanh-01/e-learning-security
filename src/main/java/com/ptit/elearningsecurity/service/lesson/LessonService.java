@@ -126,7 +126,6 @@ public class LessonService implements ILessonService {
         return mapImageDataToLessonResponse(lessonRepository.save(lesson));
     }
 
-    // kiểm tra lại chức năng cập nhật ảnh
     @Override
     public LessonResponse updateLesson(LessonRequest lessonRequest, int lessonID) throws CategoryLessonCustomException, IOException, ImageDataCustomException, LessonCustomException {
         Optional<Lesson> lessonOptional = lessonRepository.findById(lessonID);

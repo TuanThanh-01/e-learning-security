@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -19,4 +20,8 @@ public class LessonResponse {
     private List<String> contentsImagesUrl;
     @JsonProperty("category_lesson_name")
     private String categoryLessonName;
+    @JsonProperty("created_at")
+    private Instant createdAt;
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 }

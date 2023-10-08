@@ -14,6 +14,8 @@ public class DataUtils {
     public static final String ERROR_POST_NOT_FOUND = "ERROR_POST_NOT_FOUND";
     public static final String ERROR_COMMENT_NOT_FOUND = "ERROR_COMMENT_NOT_FOUND";
     public static final String ERROR_QUIZ_NOT_FOUND = "ERROR_QUIZ_NOT_FOUND";
+    public static final String ERROR_QUESTION_NOT_FOUND = "ERROR_QUESTION_NOT_FOUND";
+    public static final String ERROR_SCORE_NOT_FOUND = "ERROR_SCORE_NOT_FOUND";
 
     public static String encodeBase64(String message) {
         return Base64.getEncoder().encodeToString(message.getBytes());

@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.data.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,6 +12,10 @@ public class QuizResponse {
     private Integer id;
     private String name;
     private String description;
-    private Instant createdAt;
+    @JsonProperty("image")
     private String imageCover;
+    @JsonProperty("created_at")
+    private Instant createdAt;
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 }

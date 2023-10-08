@@ -27,11 +27,9 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -78,13 +76,15 @@ public class PostService implements IPostService {
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(postPath));
         }
 
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+        String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
                 .resolve(imagePath).resolve(postPath)
-                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+                .resolve(imageName);
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
-        return "/images/post/" + image.getOriginalFilename();
+        return "/images/post/" + imageName;
     }
 
     @Override

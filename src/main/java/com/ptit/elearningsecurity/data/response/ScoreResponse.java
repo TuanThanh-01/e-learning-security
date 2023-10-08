@@ -8,14 +8,15 @@ import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
-public class UserResponse {
-    private String id;
-    private String firstname;
-    private String lastname;
-    private String email;
-    private String avatar;
+public class ScoreResponse {
+    private Long id;
+    private Integer score;
     @JsonProperty("created_at")
     private Instant createdAt;
     @JsonProperty("updated_at")
     private Instant updatedAt;
+    @JsonProperty("user")
+    private UserResponse userResponse;
+    @JsonProperty("quiz")
+    private QuizResponse quizResponse;
 }
