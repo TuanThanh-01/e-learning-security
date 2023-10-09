@@ -88,4 +88,12 @@ public class RestControllerEntityExceptionHandler extends ResponseEntityExceptio
                 .setErrorMessage(exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ProgessCustomException.class)
+    public ResponseEntity<ErrorResponse> handleProgressException(ProgessCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
