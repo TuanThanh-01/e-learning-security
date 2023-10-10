@@ -29,9 +29,7 @@ public class Lesson {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_cover_id")
-    private ImageLesson coverImage;
+    private String coverImage;
 
     @Column(name = "create_date")
     private Instant createdAt;

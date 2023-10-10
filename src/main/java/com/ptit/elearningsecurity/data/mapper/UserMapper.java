@@ -24,6 +24,6 @@ public abstract class UserMapper {
     protected void after(@MappingTarget User user, UserRequest userRequest) {
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
-        user.setAvatar("default.png");
+        user.setAvatar("/images/userAvatar/default.png");
     }
 }

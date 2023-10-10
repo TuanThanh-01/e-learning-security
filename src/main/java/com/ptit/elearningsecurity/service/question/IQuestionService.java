@@ -4,7 +4,9 @@ import com.ptit.elearningsecurity.data.request.QuestionRequest;
 import com.ptit.elearningsecurity.data.response.QuestionResponse;
 import com.ptit.elearningsecurity.exception.QuestionCustomException;
 import com.ptit.elearningsecurity.exception.QuizCustomException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IQuestionService {
@@ -13,4 +15,5 @@ public interface IQuestionService {
     QuestionResponse createQuestion(QuestionRequest questionRequest) throws QuizCustomException;
     QuestionResponse updateQuestion(QuestionRequest questionRequest, int questionId) throws QuestionCustomException;
     void deleteQuestion(int questionId) throws QuestionCustomException;
+    List<QuestionResponse> saveAllQuestionByExcel(MultipartFile file, int quizId) throws QuizCustomException, IOException;
 }

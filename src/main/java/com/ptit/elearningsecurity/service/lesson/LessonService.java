@@ -93,11 +93,11 @@ public class LessonService implements ILessonService {
 
 
     private LessonResponse mapImageDataToLessonResponse(Lesson lesson) {
-        ImageLesson coverImage = lesson.getCoverImage();
+        String coverImage = lesson.getCoverImage();
         List<ImageLesson> contentsImages = lesson.getContentsImages();
         List<String> listContentImageUrl = contentsImages.stream().map(ImageLesson::getImageUrl).toList();
         LessonResponse lessonResponse = lessonMapper.toResponse(lesson);
-        lessonResponse.setCoverImageUrl(coverImage.getImageUrl());
+        lessonResponse.setCoverImage(coverImage);
         lessonResponse.setContentsImagesUrl(listContentImageUrl);
         return lessonResponse;
     }
@@ -117,10 +117,14 @@ public class LessonService implements ILessonService {
                     DataUtils.ERROR_LESSON_EXISTS
             );
         }
-        String lessonTitleEncoded = encodeBase64(lesson.getTitle());
-        ImageLesson coverImage = imageService.saveImage(lessonTitleEncoded, lessonRequest.getCoverImage());
-        List<ImageLesson> contentImageData = imageService.saveAllImages(lessonTitleEncoded, lessonRequest.getContentsImages());
-        lesson.setCoverImage(coverImage);
+        if(lessonRequest.getCoverImage() == null) {
+            lesson.setCoverImage("/images/lessonImage/default.png");
+        }
+        else {
+            String coverImage = imageService.uploadImage(lessonRequest.getCoverImage());
+            lesson.setCoverImage(coverImage);
+        }
+        List<ImageLesson> contentImageData = imageService.saveAllImages(lessonRequest.getContentsImages());
         lesson.setContentsImages(contentImageData);
         lesson.setCategoryLesson(categoryLessonOptional.get());
         return mapImageDataToLessonResponse(lessonRepository.save(lesson));
@@ -133,18 +137,8 @@ public class LessonService implements ILessonService {
             throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
         }
         Lesson lesson = lessonOptional.get();
-        String titleEncode = encodeBase64(lesson.getTitle());
         if (Objects.nonNull(lessonRequest.getTitle()) && !"".equalsIgnoreCase(lessonRequest.getTitle())) {
-            // update image directory name and image url
-            imageService.updateImageDirectoryName(titleEncode, encodeBase64(lessonRequest.getTitle()));
-            lesson.setCoverImage(imageService.renameImageFolder(lesson.getCoverImage().getId(), encodeBase64(lessonRequest.getTitle())));
-            List<ImageLesson> contentImages = new ArrayList<>();
-            for (ImageLesson imageData : lesson.getContentsImages()) {
-                contentImages.add(imageService.renameImageFolder(imageData.getId(), encodeBase64(lessonRequest.getTitle())));
-            }
-            lesson.setContentsImages(contentImages);
             lesson.setTitle(lessonRequest.getTitle());
-            titleEncode = encodeBase64(lesson.getTitle());
         }
 
         if (Objects.nonNull(lessonRequest.getDescription()) && !"".equalsIgnoreCase(lessonRequest.getDescription())) {
@@ -155,21 +149,16 @@ public class LessonService implements ILessonService {
             lesson.setContent(lessonRequest.getContent());
         }
         if (Objects.nonNull(lessonRequest.getCoverImage())) {
-            if (!lesson.getCoverImage().getImageName().equals(lessonRequest.getCoverImage().getOriginalFilename())) {
-                System.out.println("update image");
-                imageService.deleteImageByID(lesson.getId());
-                imageService.deleteImageResource(lesson.getCoverImage().getImageUrl());
-                imageService.updateImage(lesson.getCoverImage().getId(), titleEncode, lessonRequest.getCoverImage());
-            }
+            imageService.deleteImage(lesson.getCoverImage());
+            lesson.setCoverImage(imageService.uploadImage(lessonRequest.getCoverImage()));
         }
         if (Objects.nonNull(lessonRequest.getContentsImages()) && lessonRequest.getContentsImages().size() > 0) {
-            System.out.println("update image contents");
             for (int i = 0; i < lessonRequest.getContentsImages().size(); i++) {
                 if (!lesson.getContentsImages().get(i).getImageName()
                         .equals(lessonRequest.getContentsImages().get(i).getOriginalFilename())) {
                     imageService.deleteImageByID(lesson.getContentsImages().get(i).getId());
-                    imageService.deleteImageResource(lesson.getContentsImages().get(i).getImageUrl());
-                    imageService.updateImage(lesson.getContentsImages().get(i).getId(), titleEncode, lessonRequest.getContentsImages().get(i));
+                    imageService.deleteImage(lesson.getContentsImages().get(i).getImageUrl());
+                    imageService.updateImage(lesson.getContentsImages().get(i).getId(), lessonRequest.getContentsImages().get(i));
                 }
             }
         }
@@ -193,8 +182,10 @@ public class LessonService implements ILessonService {
             throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
         }
         Lesson lesson = lessonOptional.get();
-        imageService.deleteImageDirectory(encodeBase64(lesson.getTitle()));
-        imageService.deleteImageByID(lesson.getCoverImage().getId());
+        for (ImageLesson imageLesson : lesson.getContentsImages()) {
+            imageService.deleteImage(imageLesson.getImageUrl());
+        }
+        imageService.deleteImage(lesson.getCoverImage());
         lesson.getContentsImages().forEach(imageData -> imageService.deleteImageByID(imageData.getId()));
         lessonRepository.delete(lesson);
     }

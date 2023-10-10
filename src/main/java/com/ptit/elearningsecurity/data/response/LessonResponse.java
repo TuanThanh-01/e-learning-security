@@ -14,8 +14,8 @@ public class LessonResponse {
     private String title;
     private String description;
     private String content;
-    @JsonProperty("cover_image_url")
-    private String coverImageUrl;
+    @JsonProperty("cover_image")
+    private String coverImage;
     @JsonProperty("list_content_image_url")
     private List<String> contentsImagesUrl;
     @JsonProperty("category_lesson_name")
