@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -31,6 +33,12 @@ public class QuestionController {
     @PostMapping("/create")
     public ResponseEntity<QuestionResponse> createQuestion(@RequestBody QuestionRequest questionRequest) throws QuizCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(questionService.createQuestion(questionRequest));
+    }
+
+    @PostMapping("/upload-question-by-excel")
+    public ResponseEntity<List<QuestionResponse>> uploadQuestionByExcel(
+            @RequestParam("quizId") int quizId, @RequestParam("file") MultipartFile excelFile) throws QuizCustomException, IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(questionService.saveAllQuestionByExcel(excelFile, quizId));
     }
 
     @PutMapping("/update/{id}")
