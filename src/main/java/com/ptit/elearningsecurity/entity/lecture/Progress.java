@@ -1,7 +1,7 @@
 package com.ptit.elearningsecurity.entity.lecture;
 
 import com.ptit.elearningsecurity.entity.User;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

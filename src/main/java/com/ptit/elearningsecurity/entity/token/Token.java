@@ -1,4 +1,4 @@
-package com.ptit.elearningsecurity.entity.quiz;
+package com.ptit.elearningsecurity.entity.token;
 
 import com.ptit.elearningsecurity.entity.User;
 import javax.persistence.*;
@@ -9,24 +9,22 @@ import lombok.experimental.Accessors;
 
 import java.time.Instant;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Accessors(chain = true)
-public class Score {
+public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Integer score;
+    private Integer id;
+    private String token;
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType;
+    private boolean isExpired;
+    private boolean isRevoked;
     private Instant createdAt;
-    private Instant updatedAt;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quiz quiz;
-
 }

@@ -1,15 +1,14 @@
 package com.ptit.elearningsecurity.entity.discuss;
 
 import com.ptit.elearningsecurity.entity.User;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data

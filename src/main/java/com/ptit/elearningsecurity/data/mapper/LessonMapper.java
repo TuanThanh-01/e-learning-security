@@ -17,7 +17,7 @@ public abstract class LessonMapper {
     @Mapping(target = "contentsImages", ignore = true)
     public abstract Lesson toPojo(LessonRequest lessonRequest);
 
-    @Mapping(target = "coverImageUrl", ignore = true)
+    @Mapping(target = "coverImage", ignore = true)
     @Mapping(target = "contentsImagesUrl", ignore = true)
     @Named("toRs")
     public abstract LessonResponse toResponse(Lesson lesson);
