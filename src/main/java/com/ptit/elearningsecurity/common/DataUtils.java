@@ -19,6 +19,8 @@ public class DataUtils {
     public static final String ERROR_PROGRESS_NOT_FOUND = "ERROR_PROGRESS_NOT_FOUND";
     public static final String ERROR_TOKEN_NOT_FOUND = "ERROR_TOKEN_NOT_FOUND";
     public static final String ERROR_CONFIRMATION_TOKEN_NOT_FOUND = "ERROR_CONFIRMATION_TOKEN_NOT_FOUND";
+    public static final String ERROR_CHALLENGE_CTF_NOT_FOUND = "ERROR_CHALLENGE_CTF_NOT_FOUND";
+    public static final String ERROR_HISTORY_ACCEPT_CHALLENGE_CTF_NOT_FOUND = "ERROR_HISTORY_ACCEPT_CHALLENGE_CTF_NOT_FOUND";
 
     public static String encodeBase64(String message) {
         return Base64.getEncoder().encodeToString(message.getBytes());

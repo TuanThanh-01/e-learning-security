@@ -112,4 +112,28 @@ public class RestControllerEntityExceptionHandler extends ResponseEntityExceptio
                 .setErrorMessage(exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(CategoryChallengeCustomException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryChallengeException(CategoryChallengeCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ChallengeCTFCustomException.class)
+    public ResponseEntity<ErrorResponse> handleChallengeCTFException(ChallengeCTFCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HistorySubmitChallengeCTFCustomException.class)
+    public ResponseEntity<ErrorResponse> handleHistorySubmitChallengeCTFExceptionException(HistorySubmitChallengeCTFCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
