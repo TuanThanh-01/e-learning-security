@@ -25,7 +25,6 @@ public class HistorySubmitChallengeCTF {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @ManyToOne
     @JoinColumn(name = "challenge_CTF_id")
     private ChallengeCTF challengeCTF;

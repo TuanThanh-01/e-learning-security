@@ -12,6 +12,8 @@ public class UserResponse {
     private String id;
     private String firstname;
     private String lastname;
+    @JsonProperty("student_identity")
+    private String studentIdentity;
     private String email;
     private String avatar;
     @JsonProperty("created_at")

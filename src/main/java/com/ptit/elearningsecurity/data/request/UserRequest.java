@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 public class UserRequest {
     private String firstname;
     private String lastname;
+    private String studentIdentity;
     private String email;
     private String password;
 }

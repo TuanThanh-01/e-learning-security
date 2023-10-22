@@ -7,20 +7,24 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Accessors(chain = true)
-public class TotalAttemptChallengeCTF {
+public class ChallengeCTFResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private Integer challengeCTFId;
-
+    private boolean isCompleted;
+    private Instant createdAt;
+    @OneToOne
+    @JoinColumn(name = "challenge_ctf_id")
+    private ChallengeCTF challengeCTF;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 }
