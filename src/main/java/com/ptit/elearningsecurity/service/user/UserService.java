@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,19 +34,13 @@ public class UserService implements IUserService{
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
     private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
 
     @Override
-    public UserPageableResponse findAll(Pageable pageable) {
-        Page<User> userPage = userRepository.findAll(pageable);
-        List<User> users = userPage.getContent();
-
-        UserPageableResponse userPageableResponse = new UserPageableResponse();
-        userPageableResponse.setData(userMapper.toUserResponses(users))
-                .setTotalItems(userPage.getTotalElements())
-                .setTotalPages(userPage.getTotalPages())
-                .setCurrentPage(userPage.getNumber());
-        return userPageableResponse;
+    public List<UserResponse> findAll() {
+        List<User> users = userRepository.findAll();
+        return userMapper.toUserResponses(users);
     }
 
     @Override
@@ -58,17 +53,21 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public UserResponse create(UserRequest userRequest) throws UserCustomException {
+    public UserResponse create(UserRequest userRequest, MultipartFile image) throws UserCustomException, IOException {
         if(userRepository.existsByEmail(userRequest.getEmail())) {
             throw new UserCustomException("User Email Exists", DataUtils.ERROR_USER_EXIST);
         }
         User user = userMapper.toPojo(userRequest);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User userSaved = userRepository.save(user);
+        if(Objects.nonNull(image)) {
+            uploadAvatar(userSaved.getId(), image);
+        }
         return userMapper.toResponse(userSaved);
     }
 
     @Override
-    public UserResponse update(int userID, UserRequest userRequest) throws UserCustomException {
+    public UserResponse update(int userID, UserRequest userRequest, MultipartFile image) throws UserCustomException, IOException {
         Optional<User> userOptional = userRepository.findById(userID);
         if (userOptional.isEmpty()) {
             throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
@@ -82,6 +81,12 @@ public class UserService implements IUserService{
         }
         if(Objects.nonNull(userRequest.getEmail()) && !"".equalsIgnoreCase(userRequest.getEmail())) {
             user.setEmail(userRequest.getEmail());
+        }
+        if(Objects.nonNull(userRequest.getStudentIdentity()) && !"".equalsIgnoreCase(userRequest.getStudentIdentity())) {
+            user.setStudentIdentity(userRequest.getStudentIdentity());
+        }
+        if(Objects.nonNull(image)) {
+            uploadAvatar(user.getId(), image);
         }
         user.setUpdatedAt(Instant.now());
         return userMapper.toResponse(userRepository.save(user));

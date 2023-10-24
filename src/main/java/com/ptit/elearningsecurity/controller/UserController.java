@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -25,12 +26,8 @@ public class UserController {
     private final UserService userService;
 
     @RequestMapping("/all")
-    public ResponseEntity<UserPageableResponse> getAllUser(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size
-    ) {
-        Pageable paging = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(paging));
+    public ResponseEntity<List<UserResponse>> getAllUser() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll());
     }
 
     @RequestMapping("/{id}")
@@ -40,19 +37,22 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest)
-            throws UserCustomException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.create(userRequest));
+    public ResponseEntity<UserResponse> createUser(
+            @RequestBody UserRequest userRequest,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws UserCustomException, IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.create(userRequest, image));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable("id") int userID, @RequestBody UserRequest userRequest)
-            throws UserCustomException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.update(userID, userRequest));
+    public ResponseEntity<UserResponse> updateUser(
+            @PathVariable("id") int userID,
+            @RequestBody UserRequest userRequest,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws UserCustomException, IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(userID, userRequest, image));
     }
 
     @PutMapping(value = "/upload-avatar/{id}", consumes = "multipart/form-data")
-    public ResponseEntity<UserResponse> uploadAvatar(@PathVariable("id") int userID,@RequestParam("image") MultipartFile multipartFile)
+    public ResponseEntity<UserResponse> uploadAvatar(@PathVariable("id") int userID, @RequestParam("image") MultipartFile multipartFile)
             throws UserCustomException, IOException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.uploadAvatar(userID, multipartFile));
     }

@@ -8,12 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface IUserService {
-    UserPageableResponse findAll(Pageable pageable);
+    List<UserResponse> findAll();
     UserResponse findByID(int userID) throws UserCustomException;
-    UserResponse create(UserRequest userRequest) throws UserCustomException;
-    UserResponse update(int userID, UserRequest userRequest) throws UserCustomException;
+    UserResponse create(UserRequest userRequest, MultipartFile image) throws UserCustomException, IOException;
+    UserResponse update(int userID, UserRequest userRequest, MultipartFile image) throws UserCustomException, IOException;
     UserResponse uploadAvatar(int userID, MultipartFile multipartFile) throws UserCustomException, IOException;
     void delete(int userID) throws UserCustomException;
 }
