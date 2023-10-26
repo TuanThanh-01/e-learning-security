@@ -23,7 +23,7 @@ public abstract class UserMapper {
     @AfterMapping
     protected void after(@MappingTarget User user, UserRequest userRequest) {
         user.setCreatedAt(Instant.now());
-        user.setUpdatedAt(Instant.now());
+        user.setUpdatedAt(null);
         user.setAvatar("/images/userAvatar/default.png");
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -38,16 +39,37 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<UserResponse> createUser(
-            @RequestBody UserRequest userRequest,
+            @RequestParam("firstname") String firstname,
+            @RequestParam("lastname") String lastname,
+            @RequestParam("studentIdentity") String studentIdentity,
+            @RequestParam("email") String email,
+            @RequestParam("password") String password,
             @RequestParam(value = "image", required = false) MultipartFile image) throws UserCustomException, IOException {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setFirstname(firstname)
+                .setLastname(lastname)
+                .setStudentIdentity(studentIdentity)
+                .setEmail(email)
+                .setPassword(password);
+
         return ResponseEntity.status(HttpStatus.OK).body(userService.create(userRequest, image));
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable("id") int userID,
-            @RequestBody UserRequest userRequest,
+            @RequestParam("firstname") String firstname,
+            @RequestParam("lastname") String lastname,
+            @RequestParam("studentIdentity") String studentIdentity,
+            @RequestParam("email") String email,
+            @RequestParam("password") String password,
             @RequestParam(value = "image", required = false) MultipartFile image) throws UserCustomException, IOException {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setFirstname(firstname)
+                .setLastname(lastname)
+                .setStudentIdentity(studentIdentity)
+                .setEmail(email)
+                .setPassword(password);
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(userID, userRequest, image));
     }
 

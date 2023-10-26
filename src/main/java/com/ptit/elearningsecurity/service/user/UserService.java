@@ -23,7 +23,9 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,7 +61,9 @@ public class UserService implements IUserService{
         }
         User user = userMapper.toPojo(userRequest);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(true);
         User userSaved = userRepository.save(user);
+
         if(Objects.nonNull(image)) {
             uploadAvatar(userSaved.getId(), image);
         }
@@ -108,18 +112,19 @@ public class UserService implements IUserService{
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(userAvatar));
         }
 
-        if(!user.getAvatar().equalsIgnoreCase("default.png")) {
-            deleteImageResource("/images/userAvatar/" + user.getAvatar());
+        if(!user.getAvatar().equalsIgnoreCase("/images/userAvatar/default.png")) {
+            deleteImageResource(user.getAvatar());
         }
 
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+        String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
                 .resolve(imagePath).resolve(userAvatar)
-                .resolve(Objects.requireNonNull(image.getOriginalFilename()));
+                .resolve(imageName);
         try(OutputStream os = Files.newOutputStream(imageFilePath)){
             os.write(image.getBytes());
         }
-        user.setAvatar(image.getOriginalFilename());
-        user.setUpdatedAt(Instant.now());
+        user.setAvatar("/images/userAvatar/" + imageName);
         return userMapper.toResponse(userRepository.save(user));
     }
 
