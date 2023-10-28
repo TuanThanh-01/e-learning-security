@@ -11,6 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -20,11 +24,13 @@ public class ChallengeCTFController {
     private final ChallengeCTFService challengeCTFService;
 
     @GetMapping("/all")
-    public ResponseEntity<ChallengeCTFPageableResponse> getAllChallengeCTF(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
-        Pageable paging = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTF(paging));
+    public ResponseEntity<List<ChallengeCTFResponse>> getAllChallengeCTF() {
+        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTF());
+    }
+
+    @GetMapping("/all-resolved-by-user")
+    public ResponseEntity<List<ChallengeCTFResponse>> getAllChallengeCTF(@RequestParam("userId") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTFResolveByUser(userId));
     }
 
     @GetMapping("/{id}")
@@ -43,8 +49,24 @@ public class ChallengeCTFController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ChallengeCTFResponse> createChallengeCTF(@RequestBody ChallengeCTFRequest challengeCTFRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.createChallengeCTF(challengeCTFRequest));
+    public ResponseEntity<ChallengeCTFResponse> createChallengeCTF(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("level") String level,
+            @RequestParam("tag") String tag,
+            @RequestParam("hint") String hint,
+            @RequestParam("flag") String flag,
+            @RequestParam("point") Integer point,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        ChallengeCTFRequest challengeCTFRequest = new ChallengeCTFRequest();
+        challengeCTFRequest.setTitle(title)
+                .setContent(content)
+                .setLevel(level)
+                .setTag(tag)
+                .setHint(hint)
+                .setFlag(flag)
+                .setPoint(point);
+        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.createChallengeCTF(challengeCTFRequest, file));
     }
 
     @PutMapping("/update/{id}")

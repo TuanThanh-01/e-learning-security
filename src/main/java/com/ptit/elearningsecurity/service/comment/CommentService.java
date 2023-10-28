@@ -37,7 +37,6 @@ public class CommentService implements ICommentService{
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
-    private final UserMapper userMapper;
     private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
 
     @Override

@@ -27,6 +27,7 @@ public class ChallengeCTF {
     private String flag;
     private Integer point;
     private Integer totalSolve;
+    private String urlFile;
     @Column(name = "created_at")
     private Instant createdAt;
     @Column(name = "updated_at")

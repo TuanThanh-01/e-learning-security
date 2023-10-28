@@ -3,17 +3,22 @@ package com.ptit.elearningsecurity.service.challengeCTF;
 import com.ptit.elearningsecurity.common.DataUtils;
 import com.ptit.elearningsecurity.data.mapper.ChallengeCTFMapper;
 import com.ptit.elearningsecurity.data.request.ChallengeCTFRequest;
-import com.ptit.elearningsecurity.data.response.ChallengeCTFPageableResponse;
 import com.ptit.elearningsecurity.data.response.ChallengeCTFResponse;
 import com.ptit.elearningsecurity.entity.labCTF.ChallengeCTF;
 import com.ptit.elearningsecurity.exception.ChallengeCTFCustomException;
 import com.ptit.elearningsecurity.repository.ChallengeCTFRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,17 +28,18 @@ import java.util.Optional;
 public class ChallengeCTFService implements IChallengeCTFService {
     private final ChallengeCTFRepository challengeCTFRepository;
     private final ChallengeCTFMapper challengeCTFMapper;
+    private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
 
     @Override
-    public ChallengeCTFPageableResponse getAllChallengeCTF(Pageable pageable) {
-        Page<ChallengeCTF> challengeCTFPage = challengeCTFRepository.findAll(pageable);
-        List<ChallengeCTF> challengeCTFList = challengeCTFPage.getContent();
-        List<ChallengeCTFResponse> challengeCTFResponseList = challengeCTFMapper.toListResponse(challengeCTFList);
-        ChallengeCTFPageableResponse challengeCTFPageableResponse = new ChallengeCTFPageableResponse();
-        return challengeCTFPageableResponse.setData(challengeCTFResponseList)
-                .setTotalItems(challengeCTFPage.getTotalElements())
-                .setCurrentPage(challengeCTFPage.getNumber())
-                .setTotalPages(challengeCTFPage.getTotalPages());
+    public List<ChallengeCTFResponse> getAllChallengeCTF() {
+        List<ChallengeCTF> challengeCTFList = challengeCTFRepository.findAll();
+        return challengeCTFMapper.toListResponse(challengeCTFList);
+    }
+
+    @Override
+    public List<ChallengeCTFResponse> getAllChallengeCTFResolveByUser(int userId) {
+        List<ChallengeCTF> challengeCTFList = challengeCTFRepository.findAllChallengeCTFResolvedByUser(userId);
+        return challengeCTFMapper.toListResponse(challengeCTFList);
     }
 
     @Override
@@ -57,12 +63,34 @@ public class ChallengeCTFService implements IChallengeCTFService {
     }
 
     @Override
-    public ChallengeCTFResponse createChallengeCTF(ChallengeCTFRequest challengeCTFRequest) {
+    public ChallengeCTFResponse createChallengeCTF(ChallengeCTFRequest challengeCTFRequest, MultipartFile file) throws IOException {
         ChallengeCTF challengeCTF = challengeCTFMapper.toPojo(challengeCTFRequest);
         challengeCTF.setTotalSolve(0);
         challengeCTF.setFlag("CTF_PTIT_FLAG{" + challengeCTFRequest.getFlag() + "}");
+        if(Objects.nonNull(file)) {
+            String filePath = uploadFile(file);
+            challengeCTF.setUrlFile(filePath);
+        }
         ChallengeCTF challengeCTFSaved = challengeCTFRepository.save(challengeCTF);
         return challengeCTFMapper.toResponse(challengeCTFSaved);
+    }
+
+    private String uploadFile(MultipartFile file) throws IOException {
+        Path staticPath = Paths.get("static");
+        Path challengePath = Paths.get("challenge");
+        Path downloadPath = Paths.get("download");
+
+        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(challengePath).resolve(downloadPath))) {
+            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(challengePath).resolve(downloadPath));
+        }
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+        String fileName = timeStamp.concat("_").concat(Objects.requireNonNull(file.getOriginalFilename()));
+
+        Path filePath = CURRENT_FOLDER.resolve(staticPath)
+                .resolve(challengePath).resolve(downloadPath)
+                .resolve(fileName);
+        Files.copy(file.getInputStream(), filePath);
+        return filePath.toString();
     }
 
     @Override
