@@ -8,14 +8,22 @@ import com.ptit.elearningsecurity.entity.labCTF.ChallengeCTF;
 import com.ptit.elearningsecurity.exception.ChallengeCTFCustomException;
 import com.ptit.elearningsecurity.repository.ChallengeCTFRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
@@ -28,7 +36,7 @@ import java.util.Optional;
 public class ChallengeCTFService implements IChallengeCTFService {
     private final ChallengeCTFRepository challengeCTFRepository;
     private final ChallengeCTFMapper challengeCTFMapper;
-    private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
+    private static final Path ROOT = Paths.get("uploads");
 
     @Override
     public List<ChallengeCTFResponse> getAllChallengeCTF() {
@@ -45,7 +53,7 @@ public class ChallengeCTFService implements IChallengeCTFService {
     @Override
     public ChallengeCTFResponse getChallengeCTFById(Integer challengeCTFId) throws ChallengeCTFCustomException {
         Optional<ChallengeCTF> challengeCTFOptional = challengeCTFRepository.findById(challengeCTFId);
-        if(challengeCTFOptional.isEmpty()) {
+        if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found",
                     DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }
@@ -55,7 +63,7 @@ public class ChallengeCTFService implements IChallengeCTFService {
     @Override
     public String getFlagCTFById(Integer challengeCTFId) throws ChallengeCTFCustomException {
         Optional<ChallengeCTF> challengeCTFOptional = challengeCTFRepository.findById(challengeCTFId);
-        if(challengeCTFOptional.isEmpty()) {
+        if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found",
                     DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }
@@ -67,7 +75,7 @@ public class ChallengeCTFService implements IChallengeCTFService {
         ChallengeCTF challengeCTF = challengeCTFMapper.toPojo(challengeCTFRequest);
         challengeCTF.setTotalSolve(0);
         challengeCTF.setFlag("CTF_PTIT_FLAG{" + challengeCTFRequest.getFlag() + "}");
-        if(Objects.nonNull(file)) {
+        if (Objects.nonNull(file)) {
             String filePath = uploadFile(file);
             challengeCTF.setUrlFile(filePath);
         }
@@ -75,28 +83,46 @@ public class ChallengeCTFService implements IChallengeCTFService {
         return challengeCTFMapper.toResponse(challengeCTFSaved);
     }
 
-    private String uploadFile(MultipartFile file) throws IOException {
-        Path staticPath = Paths.get("static");
-        Path challengePath = Paths.get("challenge");
-        Path downloadPath = Paths.get("download");
-
-        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(challengePath).resolve(downloadPath))) {
-            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(challengePath).resolve(downloadPath));
+    @Override
+    public Resource load(String filename) {
+        try {
+            Path file = ROOT.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("Could not read the file!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Error: " + e.getMessage());
         }
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
-        String fileName = timeStamp.concat("_").concat(Objects.requireNonNull(file.getOriginalFilename()));
+    }
 
-        Path filePath = CURRENT_FOLDER.resolve(staticPath)
-                .resolve(challengePath).resolve(downloadPath)
-                .resolve(fileName);
-        Files.copy(file.getInputStream(), filePath);
-        return filePath.toString();
+
+    private String uploadFile(MultipartFile file) throws IOException {
+        if(!Files.exists(ROOT)) {
+            Files.createDirectories(ROOT);
+        }
+        String filename = RandomStringUtils.randomAlphanumeric(8) + "-" + file.getOriginalFilename();
+        Path filePath = ROOT.resolve(filename);
+        try(OutputStream os = Files.newOutputStream(filePath)){
+            os.write(file.getBytes());
+        }
+        return filename;
+    }
+
+    public void deleteImage(String filename) throws IOException {
+        String filePath = String.valueOf(ROOT.resolve(filename));
+        FileUtils.delete(new File(filePath));
     }
 
     @Override
-    public ChallengeCTFResponse updateChallengeCTF(Integer challengeCTFId, ChallengeCTFRequest challengeCTFRequest) throws ChallengeCTFCustomException {
+    public ChallengeCTFResponse updateChallengeCTF(
+            Integer challengeCTFId,
+            ChallengeCTFRequest challengeCTFRequest,
+            MultipartFile file) throws ChallengeCTFCustomException, IOException {
         Optional<ChallengeCTF> challengeCTFOptional = challengeCTFRepository.findById(challengeCTFId);
-        if(challengeCTFOptional.isEmpty()) {
+        if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found",
                     DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }
@@ -122,6 +148,13 @@ public class ChallengeCTFService implements IChallengeCTFService {
         if (Objects.nonNull(challengeCTFRequest.getPoint()) && challengeCTFRequest.getPoint() > 0) {
             challengeCTF.setPoint(challengeCTFRequest.getPoint());
         }
+        if(Objects.nonNull(file)) {
+            if(Objects.nonNull(challengeCTF.getUrlFile())) {
+                deleteImage(challengeCTF.getUrlFile());
+            }
+            String filePath = uploadFile(file);
+            challengeCTF.setUrlFile(filePath);
+        }
         challengeCTF.setUpdatedAt(Instant.now());
         challengeCTFRepository.save(challengeCTF);
         return challengeCTFMapper.toResponse(challengeCTF);
@@ -130,7 +163,7 @@ public class ChallengeCTFService implements IChallengeCTFService {
     @Override
     public ChallengeCTFResponse updateTotalSolveChallengeCTF(Integer challengeCTFId) throws ChallengeCTFCustomException {
         Optional<ChallengeCTF> challengeCTFOptional = challengeCTFRepository.findById(challengeCTFId);
-        if(challengeCTFOptional.isEmpty()) {
+        if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found",
                     DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }
@@ -143,7 +176,7 @@ public class ChallengeCTFService implements IChallengeCTFService {
     @Override
     public void deleteChallengeCTF(Integer challengeCTFId) throws ChallengeCTFCustomException {
         Optional<ChallengeCTF> challengeCTFOptional = challengeCTFRepository.findById(challengeCTFId);
-        if(challengeCTFOptional.isEmpty()) {
+        if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found",
                     DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }

@@ -6,8 +6,10 @@ import com.ptit.elearningsecurity.data.response.ChallengeCTFResponse;
 import com.ptit.elearningsecurity.exception.ChallengeCTFCustomException;
 import com.ptit.elearningsecurity.service.challengeCTF.ChallengeCTFService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +59,7 @@ public class ChallengeCTFController {
             @RequestParam("hint") String hint,
             @RequestParam("flag") String flag,
             @RequestParam("point") Integer point,
-            @RequestParam("file") MultipartFile file) throws IOException {
+            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
         ChallengeCTFRequest challengeCTFRequest = new ChallengeCTFRequest();
         challengeCTFRequest.setTitle(title)
                 .setContent(content)
@@ -71,9 +73,26 @@ public class ChallengeCTFController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<ChallengeCTFResponse> updateChallengeCTF(
-            @RequestBody ChallengeCTFRequest challengeCTFRequest,
-            @PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException {
-        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.updateChallengeCTF(challengeCTFId, challengeCTFRequest));
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("level") String level,
+            @RequestParam("tag") String tag,
+            @RequestParam("hint") String hint,
+            @RequestParam("flag") String flag,
+            @RequestParam("point") Integer point,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException, IOException {
+        ChallengeCTFRequest challengeCTFRequest = new ChallengeCTFRequest();
+        challengeCTFRequest.setTitle(title)
+                .setContent(content)
+                .setLevel(level)
+                .setTag(tag)
+                .setHint(hint)
+                .setFlag(flag)
+                .setPoint(point);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(challengeCTFService
+                        .updateChallengeCTF(challengeCTFId, challengeCTFRequest, file));
     }
 
     @DeleteMapping("/{id}")

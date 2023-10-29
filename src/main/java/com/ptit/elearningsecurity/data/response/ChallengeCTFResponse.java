@@ -17,6 +17,7 @@ public class ChallengeCTFResponse {
     private String hint;
     private String flag;
     private Integer point;
+    @JsonProperty("url_file")
     private String urlFile;
     @JsonProperty("total_solve")
     private Integer totalSolve;
