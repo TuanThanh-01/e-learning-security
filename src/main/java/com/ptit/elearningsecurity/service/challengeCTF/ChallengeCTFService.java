@@ -111,9 +111,9 @@ public class ChallengeCTFService implements IChallengeCTFService {
         return filename;
     }
 
-    public void deleteImage(String filename) throws IOException {
-        String filePath = String.valueOf(ROOT.resolve(filename));
-        FileUtils.delete(new File(filePath));
+    public void deleteFile(String filename) throws IOException {
+        Path filePath = ROOT.resolve(filename);
+        Files.deleteIfExists(filePath);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class ChallengeCTFService implements IChallengeCTFService {
         }
         if(Objects.nonNull(file)) {
             if(Objects.nonNull(challengeCTF.getUrlFile())) {
-                deleteImage(challengeCTF.getUrlFile());
+                deleteFile(challengeCTF.getUrlFile());
             }
             String filePath = uploadFile(file);
             challengeCTF.setUrlFile(filePath);
@@ -174,11 +174,15 @@ public class ChallengeCTFService implements IChallengeCTFService {
     }
 
     @Override
-    public void deleteChallengeCTF(Integer challengeCTFId) throws ChallengeCTFCustomException {
+    public void deleteChallengeCTF(Integer challengeCTFId) throws ChallengeCTFCustomException, IOException {
         Optional<ChallengeCTF> challengeCTFOptional = challengeCTFRepository.findById(challengeCTFId);
         if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found",
                     DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
+        }
+        ChallengeCTF challengeCTF = challengeCTFOptional.get();
+        if(Objects.nonNull(challengeCTF.getUrlFile())) {
+            deleteFile(challengeCTFOptional.get().getUrlFile());
         }
         challengeCTFRepository.delete(challengeCTFOptional.get());
     }

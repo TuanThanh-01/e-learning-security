@@ -96,7 +96,7 @@ public class ChallengeCTFController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteChallengeCTF(@PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException {
+    public ResponseEntity<String> deleteChallengeCTF(@PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException, IOException {
         challengeCTFService.deleteChallengeCTF(challengeCTFId);
         return ResponseEntity.status(HttpStatus.OK).body("Delete Challenge CTF Successfully!");
     }

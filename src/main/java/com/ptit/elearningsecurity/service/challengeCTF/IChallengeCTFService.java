@@ -18,5 +18,5 @@ public interface IChallengeCTFService {
     ChallengeCTFResponse createChallengeCTF(ChallengeCTFRequest challengeCTFRequest, MultipartFile file) throws IOException;
     ChallengeCTFResponse updateChallengeCTF(Integer challengeCTFId, ChallengeCTFRequest challengeCTFRequest, MultipartFile file) throws ChallengeCTFCustomException, IOException;
     ChallengeCTFResponse updateTotalSolveChallengeCTF(Integer challengeCTFId) throws ChallengeCTFCustomException;
-    void deleteChallengeCTF(Integer challengeCTFId) throws ChallengeCTFCustomException;
+    void deleteChallengeCTF(Integer challengeCTFId) throws ChallengeCTFCustomException, IOException;
 }
