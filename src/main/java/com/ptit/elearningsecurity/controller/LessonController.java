@@ -1,15 +1,12 @@
 package com.ptit.elearningsecurity.controller;
 
 import com.ptit.elearningsecurity.data.request.LessonRequest;
-import com.ptit.elearningsecurity.data.response.LessonPageableResponse;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import com.ptit.elearningsecurity.exception.ImageDataCustomException;
 import com.ptit.elearningsecurity.exception.LessonCustomException;
 import com.ptit.elearningsecurity.service.lesson.LessonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,29 +24,8 @@ public class LessonController {
     private final LessonService lessonService;
 
     @GetMapping("/all")
-    public ResponseEntity<LessonPageableResponse> getAllLesson(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
-        Pageable paging = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.getAllLesson(paging));
-    }
-
-    @GetMapping("/all-by-lesson-category-name")
-    public ResponseEntity<LessonPageableResponse> getAllLessonByCategoryName(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            @RequestParam String categoryName) throws CategoryLessonCustomException {
-        Pageable paging = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.getAllLessonByCategoryName(categoryName, paging));
-    }
-
-    @GetMapping("/search-lesson-by-name")
-    public ResponseEntity<LessonPageableResponse> getAllLessonByLessonName(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            @RequestParam String lessonName) {
-        Pageable paging = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.getAllLessonByName(lessonName, paging));
+    public ResponseEntity<List<LessonResponse>> getAllLesson() {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.getAllLesson());
     }
 
     @GetMapping("/{id}")
@@ -64,7 +40,7 @@ public class LessonController {
             @RequestParam("content") String content,
             @RequestParam("coverImage") MultipartFile coverImage,
             @RequestParam("contentsImages") List<MultipartFile> contentsImages,
-            @RequestParam(value = "categoryLessonID", required = false) Integer categoryLessonID
+            @RequestParam(value = "categoryLessonID", required = false) List<Integer> categoryLessonID
     ) throws CategoryLessonCustomException, IOException, LessonCustomException {
         LessonRequest lessonRequest = new LessonRequest();
         lessonRequest.setTitle(title)
@@ -83,7 +59,7 @@ public class LessonController {
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "coverImage", required = false) MultipartFile coverImage,
             @RequestParam(value = "contentsImages", required = false) List<MultipartFile> contentsImages,
-            @RequestParam(value = "categoryLessonID", required = false, defaultValue = "0") Integer categoryLessonID,
+            @RequestParam(value = "categoryLessonID", required = false, defaultValue = "0") List<Integer> categoryLessonID,
             @PathVariable("id") int lessonID
     ) throws CategoryLessonCustomException, IOException, ImageDataCustomException, LessonCustomException {
         LessonRequest lessonRequest = new LessonRequest();

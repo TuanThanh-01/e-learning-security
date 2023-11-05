@@ -30,9 +30,4 @@ public abstract class LessonMapper {
         lesson.setCreatedAt(Instant.now());
         lesson.setUpdatedAt(null);
     }
-
-    @AfterMapping
-    protected void after(@MappingTarget LessonResponse lessonResponse, Lesson lesson) {
-        lessonResponse.setCategoryLessonName(lesson.getCategoryLesson().getCategoryName());
-    }
 }

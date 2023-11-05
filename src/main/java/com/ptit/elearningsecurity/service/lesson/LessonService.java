@@ -3,7 +3,6 @@ package com.ptit.elearningsecurity.service.lesson;
 import com.ptit.elearningsecurity.common.DataUtils;
 import com.ptit.elearningsecurity.data.mapper.LessonMapper;
 import com.ptit.elearningsecurity.data.request.LessonRequest;
-import com.ptit.elearningsecurity.data.response.LessonPageableResponse;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
 import com.ptit.elearningsecurity.entity.lecture.CategoryLesson;
 import com.ptit.elearningsecurity.entity.lecture.ImageLesson;
@@ -15,15 +14,15 @@ import com.ptit.elearningsecurity.repository.CategoryLessonRepository;
 import com.ptit.elearningsecurity.repository.LessonRepository;
 import com.ptit.elearningsecurity.service.imageData.ImageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
-
-import static com.ptit.elearningsecurity.common.DataUtils.encodeBase64;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,51 +34,11 @@ public class LessonService implements ILessonService {
     private final LessonMapper lessonMapper;
 
     @Override
-    public LessonPageableResponse getAllLesson(Pageable pageable) {
-        Page<Lesson> lessonPage = lessonRepository.findAll(pageable);
-        List<Lesson> lessons = lessonPage.getContent();
+    public List<LessonResponse> getAllLesson() {
+        List<Lesson> lessons = lessonRepository.findAll();
         List<LessonResponse> lessonResponses = new ArrayList<>();
         lessons.forEach(lesson -> lessonResponses.add(mapImageDataToLessonResponse(lesson)));
-
-        LessonPageableResponse lessonPageableResponse = new LessonPageableResponse();
-        lessonPageableResponse.setData(lessonResponses);
-        lessonPageableResponse.setTotalItems(lessonPage.getTotalElements());
-        lessonPageableResponse.setTotalPages(lessonPage.getTotalPages());
-        lessonPageableResponse.setCurrentPage(lessonPage.getNumber());
-        return lessonPageableResponse;
-    }
-
-    @Override
-    public LessonPageableResponse getAllLessonByCategoryName(String categoryName, Pageable pageable) throws CategoryLessonCustomException {
-        Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findByCategoryName(categoryName);
-        if(categoryLessonOptional.isEmpty()) {
-            throw new CategoryLessonCustomException("Category Lesson Not Found", DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND);
-        }
-        Page<Lesson> lessonPage = lessonRepository.findByCategoryLesson(categoryLessonOptional.get(), pageable);
-        List<Lesson> lessons = lessonPage.getContent();
-        List<LessonResponse> lessonResponses = new ArrayList<>();
-        lessons.forEach(lesson -> lessonResponses.add(mapImageDataToLessonResponse(lesson)));
-
-        LessonPageableResponse lessonPageableResponse = new LessonPageableResponse();
-        lessonPageableResponse.setData(lessonResponses);
-        lessonPageableResponse.setTotalItems(lessonPage.getTotalElements());
-        lessonPageableResponse.setTotalPages(lessonPage.getTotalPages());
-        lessonPageableResponse.setCurrentPage(lessonPage.getNumber());
-        return lessonPageableResponse;
-    }
-
-    @Override
-    public LessonPageableResponse getAllLessonByName(String lessonName, Pageable paging) {
-        Page<Lesson> lessonPage = lessonRepository.findByTitleContainingIgnoreCase(lessonName, paging);
-        List<Lesson> lessons = lessonPage.getContent();
-        List<LessonResponse> lessonResponses = new ArrayList<>();
-        lessons.forEach(lesson -> lessonResponses.add(mapImageDataToLessonResponse(lesson)));
-        LessonPageableResponse lessonPageableResponse = new LessonPageableResponse();
-        lessonPageableResponse.setData(lessonResponses);
-        lessonPageableResponse.setTotalItems(lessonPage.getTotalElements());
-        lessonPageableResponse.setTotalPages(lessonPage.getTotalPages());
-        lessonPageableResponse.setCurrentPage(lessonPage.getNumber());
-        return lessonPageableResponse;
+        return lessonResponses;
     }
 
     @Override
@@ -99,6 +58,12 @@ public class LessonService implements ILessonService {
         LessonResponse lessonResponse = lessonMapper.toResponse(lesson);
         lessonResponse.setCoverImage(coverImage);
         lessonResponse.setContentsImagesUrl(listContentImageUrl);
+        lessonResponse.setCategoryLessonList(
+                lesson.getCategoryLessons()
+                        .stream()
+                        .map(CategoryLesson::getCategoryName)
+                        .collect(Collectors.toList())
+        );
         return lessonResponse;
     }
 
@@ -106,10 +71,17 @@ public class LessonService implements ILessonService {
     @Override
     public LessonResponse createLesson(LessonRequest lessonRequest) throws CategoryLessonCustomException, IOException, LessonCustomException {
         Lesson lesson = lessonMapper.toPojo(lessonRequest);
-        Optional<CategoryLesson> categoryLessonOptional =
-                categoryLessonRepository.findById(lessonRequest.getCategoryLessonID());
-        if (categoryLessonOptional.isEmpty()) {
-            throw new CategoryLessonCustomException("Category Lesson Not Found", DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND);
+        List<CategoryLesson> categoryLessons = categoryLessonRepository.findAllById(lessonRequest.getCategoryLessonID());
+        lesson.setCategoryLessons(categoryLessons);
+        if (categoryLessons.size() < lessonRequest.getCategoryLessonID().size()) {
+            List<Integer> foundIDs = categoryLessons.stream().map(CategoryLesson::getId).toList();
+            List<Integer> notFoundIDs = new ArrayList<>(lessonRequest.getCategoryLessonID());
+            notFoundIDs.removeAll(foundIDs);
+            throw new CategoryLessonCustomException(
+                    "Category Lesson Not Found: " + notFoundIDs.stream().map(String::valueOf)
+                            .collect(Collectors.joining(", ")).trim(),
+                    DataUtils.ERROR_TOPIC_NOT_FOUND
+            );
         }
         if(lessonRepository.existsByTitle(lessonRequest.getTitle())) {
             throw new LessonCustomException(
@@ -126,7 +98,6 @@ public class LessonService implements ILessonService {
         }
         List<ImageLesson> contentImageData = imageService.saveAllImages(lessonRequest.getContentsImages());
         lesson.setContentsImages(contentImageData);
-        lesson.setCategoryLesson(categoryLessonOptional.get());
         return mapImageDataToLessonResponse(lessonRepository.save(lesson));
     }
 
@@ -162,13 +133,19 @@ public class LessonService implements ILessonService {
                 }
             }
         }
-        if (lessonRequest.getCategoryLessonID() > 0) {
-            Optional<CategoryLesson> categoryLessonOptional =
-                    categoryLessonRepository.findById(lessonRequest.getCategoryLessonID());
-            if (categoryLessonOptional.isEmpty()) {
-                throw new CategoryLessonCustomException("Category Lesson Not Found", DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND);
+        if (Objects.nonNull(lessonRequest.getCategoryLessonID()) && lessonRequest.getCategoryLessonID().size() > 0) {
+            List<CategoryLesson> categoryLessons = categoryLessonRepository.findAllById(lessonRequest.getCategoryLessonID());
+            lesson.setCategoryLessons(categoryLessons);
+            if (categoryLessons.size() < lessonRequest.getCategoryLessonID().size()) {
+                List<Integer> foundIDs = categoryLessons.stream().map(CategoryLesson::getId).toList();
+                List<Integer> notFoundIDs = new ArrayList<>(lessonRequest.getCategoryLessonID());
+                notFoundIDs.removeAll(foundIDs);
+                throw new CategoryLessonCustomException(
+                        "Category Lesson Not Found: " + notFoundIDs.stream().map(String::valueOf)
+                                .collect(Collectors.joining(", ")).trim(),
+                        DataUtils.ERROR_TOPIC_NOT_FOUND
+                );
             }
-            lesson.setCategoryLesson(categoryLessonOptional.get());
         }
         lesson.setUpdatedAt(Instant.now());
         lessonRepository.save(lesson);

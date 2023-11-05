@@ -37,9 +37,12 @@ public class Lesson {
     @Column(name = "update_date")
     private Instant updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "category_lession_id")
-    private CategoryLesson categoryLesson;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @JoinTable(name = "lesson_category",
+            joinColumns = @JoinColumn(name = "lesson_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_lession_id")
+    )
+    private List<CategoryLesson> categoryLessons;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "lesson_id")

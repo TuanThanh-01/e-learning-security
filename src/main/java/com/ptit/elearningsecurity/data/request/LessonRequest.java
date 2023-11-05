@@ -14,5 +14,5 @@ public class LessonRequest {
     private String content;
     private MultipartFile coverImage;
     private List<MultipartFile> contentsImages;
-    private Integer categoryLessonID;
+    private List<Integer> categoryLessonID;
 }
