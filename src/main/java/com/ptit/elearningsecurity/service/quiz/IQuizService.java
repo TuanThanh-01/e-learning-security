@@ -7,13 +7,14 @@ import com.ptit.elearningsecurity.exception.QuizCustomException;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public interface IQuizService {
-    QuizPageableResponse findAllQuiz(Pageable pageable);
+    List<QuizResponse> findAllQuiz();
     QuizResponse findQuizById(int id) throws QuizCustomException;
     QuizResponse findQuizByName(String name) throws QuizCustomException;
     QuizResponse createQuiz(QuizRequest quizRequest) throws IOException;
     QuizResponse updateQuiz(QuizRequest quizRequest, int quizId) throws QuizCustomException, IOException;
-    void deleteQuiz(int id) throws QuizCustomException;
+    void deleteQuiz(int id) throws QuizCustomException, IOException;
 }

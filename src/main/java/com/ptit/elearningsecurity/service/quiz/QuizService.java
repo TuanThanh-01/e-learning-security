@@ -37,15 +37,9 @@ public class QuizService implements IQuizService{
     private final QuizMapper quizMapper;
 
     @Override
-    public QuizPageableResponse findAllQuiz(Pageable pageable) {
-        Page<Quiz> quizPage = quizRepository.findAll(pageable);
-        List<Quiz> quizzes = quizPage.getContent();
-        List<QuizResponse> quizResponses = quizMapper.toQuizResponses(quizzes);
-        return new QuizPageableResponse()
-                .setData(quizResponses)
-                .setTotalItems(quizPage.getTotalElements())
-                .setCurrentPage(quizPage.getNumber())
-                .setTotalPages(quizPage.getTotalPages());
+    public List<QuizResponse> findAllQuiz() {
+        List<Quiz> quizzes = quizRepository.findAll();
+        return quizMapper.toQuizResponses(quizzes);
     }
 
     @Override
@@ -125,11 +119,15 @@ public class QuizService implements IQuizService{
     }
 
     @Override
-    public void deleteQuiz(int id) throws QuizCustomException {
+    public void deleteQuiz(int id) throws QuizCustomException, IOException {
         Optional<Quiz> quizOptional = quizRepository.findById(id);
         if(quizOptional.isEmpty()) {
             throw new QuizCustomException("Quiz Not Found", DataUtils.ERROR_QUIZ_NOT_FOUND);
         }
-        quizRepository.delete(quizOptional.get());
+        Quiz quiz = quizOptional.get();
+        if(!quiz.getImageCover().equalsIgnoreCase("/images/quiz/default.png")) {
+            deleteImageResource(quiz.getImageCover());
+        }
+        quizRepository.delete(quiz);
     }
 }
