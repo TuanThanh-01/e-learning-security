@@ -11,6 +11,7 @@ import java.util.List;
 
 
 public interface IQuizService {
+    List<String> findAllQuizName();
     List<QuizResponse> findAllQuiz();
     QuizResponse findQuizById(int id) throws QuizCustomException;
     QuizResponse findQuizByName(String name) throws QuizCustomException;

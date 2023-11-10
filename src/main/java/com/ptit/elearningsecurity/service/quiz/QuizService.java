@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,12 @@ public class QuizService implements IQuizService{
     private final QuizRepository quizRepository;
     private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
     private final QuizMapper quizMapper;
+
+    @Override
+    public List<String> findAllQuizName() {
+        List<Quiz> quizzes = quizRepository.findAll();
+        return quizzes.stream().map(Quiz::getName).collect(Collectors.toList());
+    }
 
     @Override
     public List<QuizResponse> findAllQuiz() {

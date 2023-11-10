@@ -36,12 +36,27 @@ public class QuestionService implements IQuestionService{
     private static final int COLUMN_INDEX_CORRECT_ANSWER = 5;
 
     @Override
-    public List<QuestionResponse> getAllQuestionByQuizId(int quizId) throws QuizCustomException {
-        Optional<Quiz> quizOptional = quizRepository.findById(quizId);
+    public List<QuestionResponse> getAllQuestion() {
+        List<Question> questionList = questionRepository.findAll();
+        List<QuestionResponse> questionResponses = new ArrayList<>();
+        questionList.forEach(question -> {
+            QuestionResponse questionResponse = questionMapper.toResponse(question);
+            questionResponse.setQuizTitle(question.getQuiz().getName());
+            questionResponses.add(questionResponse);
+        });
+        return questionResponses;
+    }
+
+    @Override
+    public List<QuestionResponse> getAllQuestionByQuizTitle(String quizTitle) throws QuizCustomException {
+        Optional<Quiz> quizOptional = quizRepository.findByName(quizTitle);
         if(quizOptional.isEmpty()) {
             throw new QuizCustomException("Quiz Not Found", DataUtils.ERROR_QUIZ_NOT_FOUND);
         }
-        return questionMapper.toQuestionResponses(questionRepository.findAllByQuiz(quizOptional.get()));
+        List<QuestionResponse> questionResponses = questionMapper.toQuestionResponses(
+                questionRepository.findAllByQuiz(quizOptional.get()));
+        questionResponses.forEach(questionResponse -> questionResponse.setQuizTitle(quizTitle));
+        return questionResponses;
     }
 
     @Override
@@ -50,22 +65,27 @@ public class QuestionService implements IQuestionService{
         if(questionOptional.isEmpty()) {
             throw new QuestionCustomException("Question Not Found", DataUtils.ERROR_QUESTION_NOT_FOUND);
         }
-        return questionMapper.toResponse(questionOptional.get());
+        Question question = questionOptional.get();
+        QuestionResponse questionResponse = questionMapper.toResponse(question);
+        questionResponse.setQuizTitle(question.getQuiz().getName());
+        return questionResponse;
     }
 
     @Override
     public QuestionResponse createQuestion(QuestionRequest questionRequest) throws QuizCustomException {
         Question question = questionMapper.toPojo(questionRequest);
-        Optional<Quiz> quizOptional = quizRepository.findById(questionRequest.getQuizId());
+        Optional<Quiz> quizOptional = quizRepository.findByName(questionRequest.getQuizTitle());
         if(quizOptional.isEmpty()) {
             throw new QuizCustomException("Quiz Not Found", DataUtils.ERROR_QUIZ_NOT_FOUND);
         }
         question.setQuiz(quizOptional.get());
+        QuestionResponse questionResponse = questionMapper.toResponse(questionRepository.save(question));
+        questionResponse.setQuizTitle(questionRequest.getQuizTitle());
         return questionMapper.toResponse(questionRepository.save(question));
     }
 
     @Override
-    public QuestionResponse updateQuestion(QuestionRequest questionRequest, int questionId) throws QuestionCustomException {
+    public QuestionResponse updateQuestion(QuestionRequest questionRequest, int questionId) throws QuestionCustomException, QuizCustomException {
         Optional<Question> questionOptional = questionRepository.findById(questionId);
         if(questionOptional.isEmpty()) {
             throw new QuestionCustomException("Question Not Found", DataUtils.ERROR_QUESTION_NOT_FOUND);
@@ -89,9 +109,17 @@ public class QuestionService implements IQuestionService{
         if(Objects.nonNull(questionRequest.getCorrectAnswer()) && !"".equalsIgnoreCase(questionRequest.getCorrectAnswer())) {
             question.setCorrectAnswer(questionRequest.getCorrectAnswer());
         }
-
+        if(Objects.nonNull(questionRequest.getQuizTitle()) && !"".equalsIgnoreCase(questionRequest.getQuizTitle())) {
+            Optional<Quiz> quizOptional = quizRepository.findByName(questionRequest.getQuizTitle());
+            if(quizOptional.isEmpty()) {
+                throw new QuizCustomException("Quiz Not Found", DataUtils.ERROR_QUIZ_NOT_FOUND);
+            }
+            question.setQuiz(quizOptional.get());
+        }
         question.setUpdatedAt(Instant.now());
-        return questionMapper.toResponse(questionRepository.save(question));
+        QuestionResponse questionResponse = questionMapper.toResponse(questionRepository.save(question));
+        questionResponse.setQuizTitle(question.getQuiz().getName());
+        return questionResponse;
     }
 
     @Override
@@ -100,11 +128,12 @@ public class QuestionService implements IQuestionService{
         if(questionOptional.isEmpty()) {
             throw new QuestionCustomException("Question Not Found", DataUtils.ERROR_QUESTION_NOT_FOUND);
         }
+        questionRepository.delete(questionOptional.get());
     }
 
     @Override
-    public List<QuestionResponse> saveAllQuestionByExcel(MultipartFile file, int quizId) throws QuizCustomException, IOException {
-        Optional<Quiz> quizOptional = quizRepository.findById(quizId);
+    public List<QuestionResponse> saveAllQuestionByExcel(MultipartFile file, String quizTitle) throws QuizCustomException, IOException {
+        Optional<Quiz> quizOptional = quizRepository.findByName(quizTitle);
         if(quizOptional.isEmpty()) {
             throw new QuizCustomException("Quiz Not Found", DataUtils.ERROR_QUIZ_NOT_FOUND);
         }
@@ -156,8 +185,15 @@ public class QuestionService implements IQuestionService{
             }
             questions.add(question);
         }
-        questions.forEach(question -> question.setQuiz(quizOptional.get()));
-        return questionMapper.toQuestionResponses(questionRepository.saveAll(questions));
+        Quiz quiz = quizOptional.get();
+        questions.forEach(question -> {
+            question.setQuiz(quiz);
+            question.setCreatedAt(Instant.now());
+        });
+        questionRepository.saveAll(questions);
+        List<QuestionResponse> lstQuestionResponse = questionMapper.toQuestionResponses(questions);
+        lstQuestionResponse.forEach(questionResponse -> questionResponse.setQuizTitle(quizTitle));
+        return lstQuestionResponse;
     }
 
     private static Workbook getWorkbook(InputStream inputStream, String excelFilePath) throws IOException {

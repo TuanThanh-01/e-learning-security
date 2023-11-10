@@ -12,5 +12,5 @@ public class QuestionRequest {
     private String option3;
     private String option4;
     private String correctAnswer;
-    private int quizId;
+    private String quizTitle;
 }

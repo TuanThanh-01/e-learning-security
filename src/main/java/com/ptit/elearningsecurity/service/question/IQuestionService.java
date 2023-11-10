@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.util.List;
 
 public interface IQuestionService {
-    List<QuestionResponse> getAllQuestionByQuizId(int quizId) throws QuizCustomException;
+    List<QuestionResponse> getAllQuestion();
+    List<QuestionResponse> getAllQuestionByQuizTitle(String quizTitle) throws QuizCustomException;
     QuestionResponse getQuestionById(int questionId) throws QuestionCustomException;
     QuestionResponse createQuestion(QuestionRequest questionRequest) throws QuizCustomException;
-    QuestionResponse updateQuestion(QuestionRequest questionRequest, int questionId) throws QuestionCustomException;
+    QuestionResponse updateQuestion(QuestionRequest questionRequest, int questionId) throws QuestionCustomException, QuizCustomException;
     void deleteQuestion(int questionId) throws QuestionCustomException;
-    List<QuestionResponse> saveAllQuestionByExcel(MultipartFile file, int quizId) throws QuizCustomException, IOException;
+    List<QuestionResponse> saveAllQuestionByExcel(MultipartFile file, String quizTitle) throws QuizCustomException, IOException;
 }

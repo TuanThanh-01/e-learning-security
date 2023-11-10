@@ -16,5 +16,5 @@ public class QuestionResponse {
     private String option4;
     @JsonProperty("correct_answer")
     private String correctAnswer;
-    private int quizId;
+    private String quizTitle;
 }

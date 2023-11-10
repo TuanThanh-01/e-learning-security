@@ -21,9 +21,14 @@ import java.util.List;
 public class QuestionController {
     private final QuestionService questionService;
 
+    @GetMapping("/all-by-quiz-name")
+    public ResponseEntity<List<QuestionResponse>> getAllQuestionByQuiz(@RequestParam("quizTitle") String quizTitle) throws QuizCustomException {
+        return ResponseEntity.status(HttpStatus.OK).body(questionService.getAllQuestionByQuizTitle(quizTitle));
+    }
+
     @GetMapping("/all")
-    public ResponseEntity<List<QuestionResponse>> getAllQuestionByQuiz(@RequestParam("quizId") int quizId) throws QuizCustomException {
-        return ResponseEntity.status(HttpStatus.OK).body(questionService.getAllQuestionByQuizId(quizId));
+    public ResponseEntity<List<QuestionResponse>> getAllQuestion() {
+        return ResponseEntity.status(HttpStatus.OK).body(questionService.getAllQuestion());
     }
 
     @GetMapping("/{id}")
@@ -38,14 +43,14 @@ public class QuestionController {
 
     @PostMapping("/upload-question-by-excel")
     public ResponseEntity<List<QuestionResponse>> uploadQuestionByExcel(
-            @RequestParam("quizId") int quizId, @RequestParam("file") MultipartFile excelFile) throws QuizCustomException, IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(questionService.saveAllQuestionByExcel(excelFile, quizId));
+            @RequestParam("quizTitle") String quizTitle, @RequestParam("file") MultipartFile excelFile) throws QuizCustomException, IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(questionService.saveAllQuestionByExcel(excelFile, quizTitle));
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<QuestionResponse> updateQuestion(
             @RequestBody QuestionRequest questionRequest,
-            @PathVariable("id") int questionId) throws QuestionCustomException {
+            @PathVariable("id") int questionId) throws QuestionCustomException, QuizCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(questionService.updateQuestion(questionRequest, questionId));
     }
 

@@ -24,6 +24,11 @@ public class QuizController {
 
     private final QuizService quizService;
 
+    @GetMapping("/get-all-quiz-title")
+    public ResponseEntity<List<String>> getAllQuizName() {
+        return ResponseEntity.status(HttpStatus.OK).body(quizService.findAllQuizName());
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<QuizResponse>> getAllQuiz() {
         return ResponseEntity.status(HttpStatus.OK).body(quizService.findAllQuiz());
