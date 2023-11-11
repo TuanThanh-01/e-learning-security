@@ -16,10 +16,8 @@ public class LessonResponse {
     private String content;
     @JsonProperty("cover_image")
     private String coverImage;
-    @JsonProperty("list_content_image_url")
-    private List<String> contentsImagesUrl;
     @JsonProperty("category_lesson")
-    private List<String> categoryLessonList;
+    private List<String> lstCategoryLessonName;
     @JsonProperty("created_at")
     private Instant createdAt;
     @JsonProperty("updated_at")

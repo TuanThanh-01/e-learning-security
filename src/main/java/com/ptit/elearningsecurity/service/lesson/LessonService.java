@@ -5,32 +5,35 @@ import com.ptit.elearningsecurity.data.mapper.LessonMapper;
 import com.ptit.elearningsecurity.data.request.LessonRequest;
 import com.ptit.elearningsecurity.data.response.LessonResponse;
 import com.ptit.elearningsecurity.entity.lecture.CategoryLesson;
-import com.ptit.elearningsecurity.entity.lecture.ImageLesson;
 import com.ptit.elearningsecurity.entity.lecture.Lesson;
 import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import com.ptit.elearningsecurity.exception.ImageDataCustomException;
 import com.ptit.elearningsecurity.exception.LessonCustomException;
 import com.ptit.elearningsecurity.repository.CategoryLessonRepository;
 import com.ptit.elearningsecurity.repository.LessonRepository;
-import com.ptit.elearningsecurity.service.imageData.ImageService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class LessonService implements ILessonService {
 
+    private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
     private final LessonRepository lessonRepository;
     private final CategoryLessonRepository categoryLessonRepository;
-    private final ImageService imageService;
     private final LessonMapper lessonMapper;
 
     @Override
@@ -53,12 +56,9 @@ public class LessonService implements ILessonService {
 
     private LessonResponse mapImageDataToLessonResponse(Lesson lesson) {
         String coverImage = lesson.getCoverImage();
-        List<ImageLesson> contentsImages = lesson.getContentsImages();
-        List<String> listContentImageUrl = contentsImages.stream().map(ImageLesson::getImageUrl).toList();
         LessonResponse lessonResponse = lessonMapper.toResponse(lesson);
         lessonResponse.setCoverImage(coverImage);
-        lessonResponse.setContentsImagesUrl(listContentImageUrl);
-        lessonResponse.setCategoryLessonList(
+        lessonResponse.setLstCategoryLessonName(
                 lesson.getCategoryLessons()
                         .stream()
                         .map(CategoryLesson::getCategoryName)
@@ -67,15 +67,41 @@ public class LessonService implements ILessonService {
         return lessonResponse;
     }
 
+    private String uploadImage(MultipartFile image) throws IOException {
+        Path staticPath = Paths.get("static");
+        Path imagePath = Paths.get("images");
+        Path commentPath = Paths.get("lesson");
+
+        if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(commentPath))) {
+            Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(commentPath));
+        }
+
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
+        String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
+        Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
+                .resolve(imagePath).resolve(commentPath)
+                .resolve(imageName);
+        try(OutputStream os = Files.newOutputStream(imageFilePath)){
+            os.write(image.getBytes());
+        }
+        return "/images/lesson/" + imageName;
+    }
+
+    private void deleteImageResource(String imageUrl) throws IOException {
+        Path staticPath = Paths.get("static");
+        String imageUrlPath = CURRENT_FOLDER.resolve(staticPath) + imageUrl;
+        FileUtils.delete(new File(imageUrlPath));
+    }
 
     @Override
-    public LessonResponse createLesson(LessonRequest lessonRequest) throws CategoryLessonCustomException, IOException, LessonCustomException {
+    public LessonResponse createLesson(LessonRequest lessonRequest) throws CategoryLessonCustomException, LessonCustomException, IOException {
         Lesson lesson = lessonMapper.toPojo(lessonRequest);
-        List<CategoryLesson> categoryLessons = categoryLessonRepository.findAllById(lessonRequest.getCategoryLessonID());
+        List<CategoryLesson> categoryLessons = categoryLessonRepository
+                .findByCategoryNameIn(lessonRequest.getLstCategoryLessonName());
         lesson.setCategoryLessons(categoryLessons);
-        if (categoryLessons.size() < lessonRequest.getCategoryLessonID().size()) {
-            List<Integer> foundIDs = categoryLessons.stream().map(CategoryLesson::getId).toList();
-            List<Integer> notFoundIDs = new ArrayList<>(lessonRequest.getCategoryLessonID());
+        if (categoryLessons.size() < lessonRequest.getLstCategoryLessonName().size()) {
+            List<String> foundIDs = categoryLessons.stream().map(CategoryLesson::getCategoryName).toList();
+            List<String> notFoundIDs = new ArrayList<>(lessonRequest.getLstCategoryLessonName());
             notFoundIDs.removeAll(foundIDs);
             throw new CategoryLessonCustomException(
                     "Category Lesson Not Found: " + notFoundIDs.stream().map(String::valueOf)
@@ -90,14 +116,12 @@ public class LessonService implements ILessonService {
             );
         }
         if(lessonRequest.getCoverImage() == null) {
-            lesson.setCoverImage("/images/lessonImage/default.png");
+            lesson.setCoverImage("/images/lesson/default.png");
         }
         else {
-            String coverImage = imageService.uploadImage(lessonRequest.getCoverImage());
+            String coverImage = uploadImage(lessonRequest.getCoverImage());
             lesson.setCoverImage(coverImage);
         }
-        List<ImageLesson> contentImageData = imageService.saveAllImages(lessonRequest.getContentsImages());
-        lesson.setContentsImages(contentImageData);
         return mapImageDataToLessonResponse(lessonRepository.save(lesson));
     }
 
@@ -120,25 +144,16 @@ public class LessonService implements ILessonService {
             lesson.setContent(lessonRequest.getContent());
         }
         if (Objects.nonNull(lessonRequest.getCoverImage())) {
-            imageService.deleteImage(lesson.getCoverImage());
-            lesson.setCoverImage(imageService.uploadImage(lessonRequest.getCoverImage()));
+            deleteImageResource(lesson.getCoverImage());
+            lesson.setCoverImage(uploadImage(lessonRequest.getCoverImage()));
         }
-        if (Objects.nonNull(lessonRequest.getContentsImages()) && lessonRequest.getContentsImages().size() > 0) {
-            for (int i = 0; i < lessonRequest.getContentsImages().size(); i++) {
-                if (!lesson.getContentsImages().get(i).getImageName()
-                        .equals(lessonRequest.getContentsImages().get(i).getOriginalFilename())) {
-                    imageService.deleteImageByID(lesson.getContentsImages().get(i).getId());
-                    imageService.deleteImage(lesson.getContentsImages().get(i).getImageUrl());
-                    imageService.updateImage(lesson.getContentsImages().get(i).getId(), lessonRequest.getContentsImages().get(i));
-                }
-            }
-        }
-        if (Objects.nonNull(lessonRequest.getCategoryLessonID()) && lessonRequest.getCategoryLessonID().size() > 0) {
-            List<CategoryLesson> categoryLessons = categoryLessonRepository.findAllById(lessonRequest.getCategoryLessonID());
+        if (Objects.nonNull(lessonRequest.getLstCategoryLessonName()) && lessonRequest.getLstCategoryLessonName().size() > 0) {
+            List<CategoryLesson> categoryLessons = categoryLessonRepository
+                    .findByCategoryNameIn(lessonRequest.getLstCategoryLessonName());
             lesson.setCategoryLessons(categoryLessons);
-            if (categoryLessons.size() < lessonRequest.getCategoryLessonID().size()) {
-                List<Integer> foundIDs = categoryLessons.stream().map(CategoryLesson::getId).toList();
-                List<Integer> notFoundIDs = new ArrayList<>(lessonRequest.getCategoryLessonID());
+            if (categoryLessons.size() < lessonRequest.getLstCategoryLessonName().size()) {
+                List<String> foundIDs = categoryLessons.stream().map(CategoryLesson::getCategoryName).toList();
+                List<String> notFoundIDs = new ArrayList<>(lessonRequest.getLstCategoryLessonName());
                 notFoundIDs.removeAll(foundIDs);
                 throw new CategoryLessonCustomException(
                         "Category Lesson Not Found: " + notFoundIDs.stream().map(String::valueOf)
@@ -159,11 +174,7 @@ public class LessonService implements ILessonService {
             throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
         }
         Lesson lesson = lessonOptional.get();
-        for (ImageLesson imageLesson : lesson.getContentsImages()) {
-            imageService.deleteImage(imageLesson.getImageUrl());
-        }
-        imageService.deleteImage(lesson.getCoverImage());
-        lesson.getContentsImages().forEach(imageData -> imageService.deleteImageByID(imageData.getId()));
+        deleteImageResource(lesson.getCoverImage());
         lessonRepository.delete(lesson);
     }
 }

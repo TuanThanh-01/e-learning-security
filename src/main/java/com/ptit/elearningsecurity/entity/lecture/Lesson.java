@@ -44,10 +44,6 @@ public class Lesson {
     )
     private List<CategoryLesson> categoryLessons;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "lesson_id")
-    private List<ImageLesson> contentsImages;
-
     @ManyToMany(mappedBy = "lessons")
     private List<Progress> progresses;
 }

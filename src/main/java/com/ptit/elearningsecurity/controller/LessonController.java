@@ -39,16 +39,14 @@ public class LessonController {
             @RequestParam("description") String description,
             @RequestParam("content") String content,
             @RequestParam("coverImage") MultipartFile coverImage,
-            @RequestParam("contentsImages") List<MultipartFile> contentsImages,
-            @RequestParam(value = "categoryLessonID", required = false) List<Integer> categoryLessonID
+            @RequestParam(value = "lstCategoryLessonName", required = false) List<String> lstCategoryLessonName
     ) throws CategoryLessonCustomException, IOException, LessonCustomException {
         LessonRequest lessonRequest = new LessonRequest();
         lessonRequest.setTitle(title)
                 .setDescription(description)
                 .setContent(content)
                 .setCoverImage(coverImage)
-                .setContentsImages(contentsImages)
-                .setCategoryLessonID(categoryLessonID);
+                .setLstCategoryLessonName(lstCategoryLessonName);
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.createLesson(lessonRequest));
     }
 
@@ -58,8 +56,7 @@ public class LessonController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "coverImage", required = false) MultipartFile coverImage,
-            @RequestParam(value = "contentsImages", required = false) List<MultipartFile> contentsImages,
-            @RequestParam(value = "categoryLessonID", required = false, defaultValue = "0") List<Integer> categoryLessonID,
+            @RequestParam(value = "lstCategoryLessonName", required = false, defaultValue = "0") List<String> lstCategoryLessonName,
             @PathVariable("id") int lessonID
     ) throws CategoryLessonCustomException, IOException, ImageDataCustomException, LessonCustomException {
         LessonRequest lessonRequest = new LessonRequest();
@@ -67,8 +64,7 @@ public class LessonController {
                 .setDescription(description)
                 .setContent(content)
                 .setCoverImage(coverImage)
-                .setContentsImages(contentsImages)
-                .setCategoryLessonID(categoryLessonID);
+                .setLstCategoryLessonName(lstCategoryLessonName);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(lessonService.updateLesson(lessonRequest, lessonID));
     }

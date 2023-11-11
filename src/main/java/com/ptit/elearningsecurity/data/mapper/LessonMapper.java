@@ -14,11 +14,9 @@ import java.util.List;
 public abstract class LessonMapper {
 
     @Mapping(target = "coverImage", ignore = true)
-    @Mapping(target = "contentsImages", ignore = true)
     public abstract Lesson toPojo(LessonRequest lessonRequest);
 
     @Mapping(target = "coverImage", ignore = true)
-    @Mapping(target = "contentsImagesUrl", ignore = true)
     @Named("toRs")
     public abstract LessonResponse toResponse(Lesson lesson);
 
