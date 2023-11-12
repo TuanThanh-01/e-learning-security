@@ -20,8 +20,13 @@ public class CategoryLessonController {
     private final CategoryLessonService categoryLessonService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<CategoryLessonResponse>> findAllCategoryLesson() {
+    public ResponseEntity<List<CategoryLessonResponse>> getAllCategoryLesson() {
         return ResponseEntity.status(HttpStatus.OK).body(categoryLessonService.getAll());
+    }
+
+    @GetMapping("/get-all-category-lesson-name")
+    public ResponseEntity<List<String>> getAllCategoryLessonName() {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryLessonService.getAllCategoryLessonName());
     }
 
     @GetMapping("/{id}")

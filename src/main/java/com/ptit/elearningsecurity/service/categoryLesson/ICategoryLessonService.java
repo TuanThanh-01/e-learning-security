@@ -7,6 +7,7 @@ import com.ptit.elearningsecurity.exception.CategoryLessonCustomException;
 import java.util.List;
 
 public interface ICategoryLessonService {
+    List<String> getAllCategoryLessonName();
     List<CategoryLessonResponse> getAll();
     CategoryLessonResponse getSingleById(int categoryLessonID) throws CategoryLessonCustomException;
     CategoryLessonResponse create(CategoryLessonRequest categoryLessonRequest);

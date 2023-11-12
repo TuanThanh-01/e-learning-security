@@ -15,13 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryLessonService implements ICategoryLessonService{
+public class CategoryLessonService implements ICategoryLessonService {
 
     private final CategoryLessonRepository categoryLessonRepository;
     private final CategoryLessonMapper categoryLessonMapper;
+
+    @Override
+    public List<String> getAllCategoryLessonName() {
+        return categoryLessonRepository.findAll()
+                .stream()
+                .map(CategoryLesson::getCategoryName)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<CategoryLessonResponse> getAll() {
@@ -31,7 +40,7 @@ public class CategoryLessonService implements ICategoryLessonService{
     @Override
     public CategoryLessonResponse getSingleById(int categoryLessonID) throws CategoryLessonCustomException {
         Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findById(categoryLessonID);
-        if(categoryLessonOptional.isEmpty()) {
+        if (categoryLessonOptional.isEmpty()) {
             throw new CategoryLessonCustomException(
                     "Category Lesson Not Found",
                     DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
@@ -51,17 +60,17 @@ public class CategoryLessonService implements ICategoryLessonService{
     @Override
     public CategoryLessonResponse update(CategoryLessonRequest categoryLessonRequest, int categoryLessonID) throws CategoryLessonCustomException {
         Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findById(categoryLessonID);
-        if(categoryLessonOptional.isEmpty()) {
+        if (categoryLessonOptional.isEmpty()) {
             throw new CategoryLessonCustomException(
                     "Category Lesson Not Found",
                     DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
             );
         }
         CategoryLesson categoryLesson = categoryLessonOptional.get();
-        if(Objects.nonNull(categoryLessonRequest.getCategoryName()) && !"".equalsIgnoreCase(categoryLessonRequest.getCategoryName())) {
+        if (Objects.nonNull(categoryLessonRequest.getCategoryName()) && !"".equalsIgnoreCase(categoryLessonRequest.getCategoryName())) {
             categoryLesson.setCategoryName(categoryLessonRequest.getCategoryName());
         }
-        if(Objects.nonNull(categoryLessonRequest.getDescription()) && !"".equalsIgnoreCase(categoryLessonRequest.getDescription())) {
+        if (Objects.nonNull(categoryLessonRequest.getDescription()) && !"".equalsIgnoreCase(categoryLessonRequest.getDescription())) {
             categoryLesson.setDescription(categoryLessonRequest.getDescription());
         }
         categoryLesson.setUpdatedAt(Instant.now());
@@ -72,7 +81,7 @@ public class CategoryLessonService implements ICategoryLessonService{
     @Override
     public void delete(int categoryLessonID) throws CategoryLessonCustomException {
         Optional<CategoryLesson> categoryLessonOptional = categoryLessonRepository.findById(categoryLessonID);
-        if(categoryLessonOptional.isEmpty()) {
+        if (categoryLessonOptional.isEmpty()) {
             throw new CategoryLessonCustomException(
                     "Category Lesson Not Found",
                     DataUtils.ERROR_CATEGORY_LESSON_NOT_FOUND
