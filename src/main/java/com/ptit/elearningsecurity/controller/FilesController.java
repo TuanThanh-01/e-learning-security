@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ public class FilesController {
 
     private final ChallengeCTFService challengeCTFService;
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/files/{filename:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         Resource file = challengeCTFService.load(filename);

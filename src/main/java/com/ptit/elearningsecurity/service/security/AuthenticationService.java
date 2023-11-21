@@ -89,6 +89,11 @@ public class AuthenticationService {
         revokeAllUserToken(user);
         saveUserToken(user, jwtToken);
         return new AuthenticationResponse()
+                .setFirstname(user.getFirstname())
+                .setLastname(user.getLastname())
+                .setEmail(user.getEmail())
+                .setRole(user.getRole().name())
+                .setStudentIdentity(user.getStudentIdentity())
                 .setAccessToken(jwtToken)
                 .setRefreshToken(refreshToken);
     }

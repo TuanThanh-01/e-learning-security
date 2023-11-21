@@ -37,9 +37,9 @@ public class User implements UserDetails {
     private String avatar;
     private Instant createdAt;
     private Instant updatedAt;
+    @Column(name = "scored_challenge_ctf")
+    private Integer scoredChallengeCTF;
     private boolean enabled;
-    @Column(name = "verification_token")
-    private String verificationToken;
 
     @Enumerated(EnumType.STRING)
     private Role role;

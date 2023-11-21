@@ -41,7 +41,7 @@ public class UserService implements IUserService{
 
     @Override
     public List<UserResponse> findAll() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllUserWithRoleNotEqualAdmin();
         return userMapper.toUserResponses(users);
     }
 

@@ -16,6 +16,7 @@ public class UserResponse {
     private String studentIdentity;
     private String email;
     private String avatar;
+    private Integer scoredChallengeCTF;
     @JsonProperty("created_at")
     private Instant createdAt;
     @JsonProperty("updated_at")

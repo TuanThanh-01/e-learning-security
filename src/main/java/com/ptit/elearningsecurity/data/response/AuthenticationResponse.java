@@ -7,6 +7,12 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class AuthenticationResponse {
+    private String firstname;
+    private String lastname;
+    private String email;
+    private String role;
+    @JsonProperty("student_identity")
+    private String studentIdentity;
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("refresh_token")

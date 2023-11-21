@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,31 +26,37 @@ import java.util.List;
 public class ChallengeCTFController {
     private final ChallengeCTFService challengeCTFService;
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<ChallengeCTFResponse>> getAllChallengeCTF() {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTF());
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/all-resolved-by-user")
     public ResponseEntity<List<ChallengeCTFResponse>> getAllChallengeCTF(@RequestParam("userId") Integer userId) {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTFResolveByUser(userId));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ChallengeCTFResponse> getChallengeCTFById(@PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getChallengeCTFById(challengeCTFId));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/get-flag/{id}")
     public ResponseEntity<String> getFlagByChallengeCTFId(@PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getFlagCTFById(challengeCTFId));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/update-total-solve/{id}")
     public ResponseEntity<ChallengeCTFResponse> updateTotalSolveByChallengeCTFId(@PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.updateTotalSolveChallengeCTF(challengeCTFId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<ChallengeCTFResponse> createChallengeCTF(
             @RequestParam("title") String title,
@@ -71,6 +78,7 @@ public class ChallengeCTFController {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.createChallengeCTF(challengeCTFRequest, file));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<ChallengeCTFResponse> updateChallengeCTF(
             @RequestParam("title") String title,
@@ -95,6 +103,7 @@ public class ChallengeCTFController {
                         .updateChallengeCTF(challengeCTFId, challengeCTFRequest, file));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteChallengeCTF(@PathVariable("id") Integer challengeCTFId) throws ChallengeCTFCustomException, IOException {
         challengeCTFService.deleteChallengeCTF(challengeCTFId);

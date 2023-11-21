@@ -9,6 +9,7 @@ import com.ptit.elearningsecurity.service.lesson.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,16 +24,19 @@ public class LessonController {
 
     private final LessonService lessonService;
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<LessonResponse>> getAllLesson() {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.getAllLesson());
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<LessonResponse> findLessonById(@PathVariable("id") int lessonID) throws LessonCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.findById(lessonID));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<LessonResponse> createLesson(
             @RequestParam("title") String title,
@@ -50,6 +54,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.createLesson(lessonRequest));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<LessonResponse> updateLesson(
             @RequestParam(value = "title", required = false) String title,
@@ -69,6 +74,7 @@ public class LessonController {
                 .body(lessonService.updateLesson(lessonRequest, lessonID));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteLesson(@PathVariable("id") int lessonID) throws LessonCustomException, IOException {
         lessonService.deleteLesson(lessonID);

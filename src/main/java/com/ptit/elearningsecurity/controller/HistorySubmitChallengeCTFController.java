@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class HistorySubmitChallengeCTFController {
     private final HistorySubmitChallengeCTFService historySubmitChallengeCTFService;
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<HistorySubmitChallengeCTFPageableResponse> getAllHistorySubmit(
             @RequestParam(defaultValue = "0") int page,
@@ -29,6 +31,7 @@ public class HistorySubmitChallengeCTFController {
         return ResponseEntity.status(HttpStatus.OK).body(historySubmitChallengeCTFService.getAllHistorySubmit(paging));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/get-all-by-user/{id}")
     public ResponseEntity<HistorySubmitChallengeCTFPageableResponse> getAllHistorySubmitByUser(
             @RequestParam(defaultValue = "0") int page,
@@ -39,6 +42,7 @@ public class HistorySubmitChallengeCTFController {
         return ResponseEntity.status(HttpStatus.OK).body(historySubmitChallengeCTFService.getAllHistorySubmitByUser(paging, userID));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/get-all-by-challengeCTF/{id}")
     public ResponseEntity<HistorySubmitChallengeCTFPageableResponse> getAllHistorySubmitByChallengeCTF(
             @RequestParam(defaultValue = "0") int page,
@@ -50,6 +54,7 @@ public class HistorySubmitChallengeCTFController {
                 .body(historySubmitChallengeCTFService.getAllHistorySubmitByChallengeCTF(paging, challengeCTFId));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<HistorySubmitChallengeCTFResponse> createHistorySubmit(
             @RequestBody HistorySubmitChallengeCTFRequest historySubmitChallengeCTFRequest
