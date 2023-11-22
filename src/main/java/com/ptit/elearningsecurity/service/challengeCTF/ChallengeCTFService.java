@@ -1,6 +1,7 @@
 package com.ptit.elearningsecurity.service.challengeCTF;
 
 import com.ptit.elearningsecurity.common.DataUtils;
+import com.ptit.elearningsecurity.data.dto.ChallengeCTFResponseDTO;
 import com.ptit.elearningsecurity.data.mapper.ChallengeCTFMapper;
 import com.ptit.elearningsecurity.data.request.ChallengeCTFRequest;
 import com.ptit.elearningsecurity.data.response.ChallengeCTFResponse;
@@ -33,10 +34,17 @@ public class ChallengeCTFService implements IChallengeCTFService {
     private static final Path ROOT = Paths.get("uploads");
 
     @Override
+    public List<ChallengeCTFResponseDTO> getAllChallengeCTFByUser(int userId) {
+        return challengeCTFRepository.findAllChallengeCTFResponseDTOByUser(userId);
+    }
+
+    @Override
     public List<ChallengeCTFResponse> getAllChallengeCTF() {
         List<ChallengeCTF> challengeCTFList = challengeCTFRepository.findAll();
         return challengeCTFMapper.toListResponse(challengeCTFList);
     }
+
+
 
     @Override
     public List<ChallengeCTFResponse> getAllChallengeCTFResolveByUser(int userId) {

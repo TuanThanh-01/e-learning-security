@@ -63,35 +63,47 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
     @Override
     public HistorySubmitChallengeCTFResponse createHistorySubmit(HistorySubmitChallengeCTFRequest historySubmitChallengeCTFRequest) throws UserCustomException, ChallengeCTFCustomException {
         Optional<User> userOptional = userRepository.findById(historySubmitChallengeCTFRequest.getUserId());
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         Optional<ChallengeCTF> challengeCTFOptional =
                 challengeCTFRepository.findById(historySubmitChallengeCTFRequest.getChallengeCTFId());
-        if(challengeCTFOptional.isEmpty()){
+        if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found", DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }
+        ChallengeCTF challengeCTF = challengeCTFOptional.get();
+        User user = userOptional.get();
         HistorySubmitChallengeCTF historySubmitChallengeCTF = historySubmitChallengeCTFMapper.toPojo(historySubmitChallengeCTFRequest);
-        historySubmitChallengeCTF.setUser(userOptional.get());
-        historySubmitChallengeCTF.setChallengeCTF(challengeCTFOptional.get());
+        historySubmitChallengeCTF.setUser(user);
+        historySubmitChallengeCTF.setChallengeCTF(challengeCTF);
         HistorySubmitChallengeCTF historySubmitChallengeCTFSaved = historyAcceptChallengeRepository.save(historySubmitChallengeCTF);
 
-        // check if submit accept
-        if(historySubmitChallengeCTFSaved.getStatus().equals("accept")) {
+        if(challengeCTFResultRepository.existsByChallengeCTFAndUser(challengeCTF, user)){
+            Optional<ChallengeCTFResult> challengeCTFResultOptional =
+                    challengeCTFResultRepository.findByChallengeCTFAndUser(challengeCTF, user);
+            ChallengeCTFResult challengeCTFResult = challengeCTFResultOptional.get();
+            if(!challengeCTFResult.isCompleted() && historySubmitChallengeCTF.getStatus().equals("accept")) {
+                challengeCTFResult.setCompleted(true);
+                challengeCTFResultRepository.save(challengeCTFResult);
+            }
+        }
+        else {
             ChallengeCTFResult challengeCTFResult = new ChallengeCTFResult();
             challengeCTFResult.setUser(historySubmitChallengeCTFSaved.getUser())
                     .setChallengeCTF(historySubmitChallengeCTFSaved.getChallengeCTF())
-                    .setCompleted(true)
+                    .setCompleted(historySubmitChallengeCTFSaved.getStatus().equals("accept"))
                     .setCreatedAt(Instant.now());
             challengeCTFResultRepository.save(challengeCTFResult);
         }
+
+
         return getHistorySubmitChallengeCTFResponse(historySubmitChallengeCTFSaved);
     }
 
     @Override
     public HistorySubmitChallengeCTFPageableResponse getAllHistorySubmitByUser(Pageable pageable, Integer userId) throws UserCustomException {
         Optional<User> userOptional = userRepository.findById(userId);
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         Page<HistorySubmitChallengeCTF> historySubmitChallengeCTFPage =
@@ -115,7 +127,7 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
     public HistorySubmitChallengeCTFPageableResponse getAllHistorySubmitByChallengeCTF(Pageable pageable, Integer challengeCTFId) throws ChallengeCTFCustomException {
         Optional<ChallengeCTF> challengeCTFOptional =
                 challengeCTFRepository.findById(challengeCTFId);
-        if(challengeCTFOptional.isEmpty()){
+        if (challengeCTFOptional.isEmpty()) {
             throw new ChallengeCTFCustomException("Challenge CTF Not Found", DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }
         Page<HistorySubmitChallengeCTF> historySubmitChallengeCTFPage =

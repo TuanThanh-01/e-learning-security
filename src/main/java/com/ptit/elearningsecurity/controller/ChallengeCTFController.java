@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.controller;
 
+import com.ptit.elearningsecurity.data.dto.ChallengeCTFResponseDTO;
 import com.ptit.elearningsecurity.data.request.ChallengeCTFRequest;
 import com.ptit.elearningsecurity.data.response.ChallengeCTFPageableResponse;
 import com.ptit.elearningsecurity.data.response.ChallengeCTFResponse;
@@ -33,8 +34,14 @@ public class ChallengeCTFController {
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/all-by-user")
+    public ResponseEntity<List<ChallengeCTFResponseDTO>> getAllChallengeCTFByUser(@RequestParam("userId") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTFByUser(userId));
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/all-resolved-by-user")
-    public ResponseEntity<List<ChallengeCTFResponse>> getAllChallengeCTF(@RequestParam("userId") Integer userId) {
+    public ResponseEntity<List<ChallengeCTFResponse>> getAllChallengeCTFResolvedByUser(@RequestParam("userId") Integer userId) {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTFResolveByUser(userId));
     }
 

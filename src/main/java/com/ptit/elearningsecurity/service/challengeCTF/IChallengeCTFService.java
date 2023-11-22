@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.service.challengeCTF;
 
+import com.ptit.elearningsecurity.data.dto.ChallengeCTFResponseDTO;
 import com.ptit.elearningsecurity.data.request.ChallengeCTFRequest;
 import com.ptit.elearningsecurity.data.response.ChallengeCTFResponse;
 import com.ptit.elearningsecurity.exception.ChallengeCTFCustomException;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface IChallengeCTFService {
+    List<ChallengeCTFResponseDTO> getAllChallengeCTFByUser(int userId);
     List<ChallengeCTFResponse> getAllChallengeCTF();
     List<ChallengeCTFResponse> getAllChallengeCTFResolveByUser(int userId);
     Resource load(String filename);

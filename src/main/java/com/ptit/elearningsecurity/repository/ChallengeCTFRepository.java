@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.repository;
 
+import com.ptit.elearningsecurity.data.dto.ChallengeCTFResponseDTO;
 import com.ptit.elearningsecurity.entity.labCTF.ChallengeCTF;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,12 @@ public interface ChallengeCTFRepository extends JpaRepository<ChallengeCTF, Inte
             "on c.id = r.challenge_ctf_id) " +
             "where c.user_id = :user_id", nativeQuery = true)
     List<ChallengeCTF> findAllChallengeCTFResolvedByUser(@Param("user_id") Integer userId);
+
+    @Query("SELECT NEW com.ptit.elearningsecurity.data.dto.ChallengeCTFResponseDTO(c.id, c.title, c.content, " +
+            "c.level, c.tag, c.hint, c.flag, c.point, c.urlFile, c.totalSolve, c.createdAt, c.updatedAt, r.isCompleted) " +
+            "FROM ChallengeCTF c " +
+            "LEFT JOIN ChallengeCTFResult r " +
+            "ON c.id = r.challengeCTF.id " +
+            "AND r.user.id = :user_id")
+    List<ChallengeCTFResponseDTO> findAllChallengeCTFResponseDTOByUser(@Param("user_id") Integer userId);
 }
