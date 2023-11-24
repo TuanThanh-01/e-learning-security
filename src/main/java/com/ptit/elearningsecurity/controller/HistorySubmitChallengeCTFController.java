@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
@@ -33,13 +35,10 @@ public class HistorySubmitChallengeCTFController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/get-all-by-user/{id}")
-    public ResponseEntity<HistorySubmitChallengeCTFPageableResponse> getAllHistorySubmitByUser(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @PathVariable("id") int userID
-    ) throws UserCustomException {
-        Pageable paging = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(historySubmitChallengeCTFService.getAllHistorySubmitByUser(paging, userID));
+    public ResponseEntity<List<HistorySubmitChallengeCTFResponse>> getAllHistorySubmitByUser(@PathVariable("id") int userID)
+            throws UserCustomException {
+
+        return ResponseEntity.status(HttpStatus.OK).body(historySubmitChallengeCTFService.getAllHistorySubmitByUser(userID));
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -58,7 +57,7 @@ public class HistorySubmitChallengeCTFController {
     @PostMapping("/create")
     public ResponseEntity<HistorySubmitChallengeCTFResponse> createHistorySubmit(
             @RequestBody HistorySubmitChallengeCTFRequest historySubmitChallengeCTFRequest
-            ) throws ChallengeCTFCustomException, UserCustomException {
+    ) throws ChallengeCTFCustomException, UserCustomException {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(historySubmitChallengeCTFService.createHistorySubmit(historySubmitChallengeCTFRequest));
     }

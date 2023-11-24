@@ -83,11 +83,17 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
                     challengeCTFResultRepository.findByChallengeCTFAndUser(challengeCTF, user);
             ChallengeCTFResult challengeCTFResult = challengeCTFResultOptional.get();
             if(!challengeCTFResult.isCompleted() && historySubmitChallengeCTF.getStatus().equals("accept")) {
+                user.setScoredChallengeCTF(user.getScoredChallengeCTF() + challengeCTF.getPoint());
                 challengeCTFResult.setCompleted(true);
+                userRepository.save(user);
                 challengeCTFResultRepository.save(challengeCTFResult);
             }
         }
         else {
+            if(historySubmitChallengeCTFSaved.getStatus().equals("accept")) {
+                user.setScoredChallengeCTF(user.getScoredChallengeCTF() + challengeCTF.getPoint());
+                userRepository.save(user);
+            }
             ChallengeCTFResult challengeCTFResult = new ChallengeCTFResult();
             challengeCTFResult.setUser(historySubmitChallengeCTFSaved.getUser())
                     .setChallengeCTF(historySubmitChallengeCTFSaved.getChallengeCTF())
@@ -101,26 +107,19 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
     }
 
     @Override
-    public HistorySubmitChallengeCTFPageableResponse getAllHistorySubmitByUser(Pageable pageable, Integer userId) throws UserCustomException {
+    public List<HistorySubmitChallengeCTFResponse> getAllHistorySubmitByUser(Integer userId) throws UserCustomException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
-        Page<HistorySubmitChallengeCTF> historySubmitChallengeCTFPage =
-                historyAcceptChallengeRepository.findAllByUser(userOptional.get(), pageable);
-        List<HistorySubmitChallengeCTF> historySubmitChallengeCTFList = historySubmitChallengeCTFPage.getContent();
-        List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFsResponses = new ArrayList<>();
-        historySubmitChallengeCTFList.forEach(historySubmitChallengeCTF -> {
+        List<HistorySubmitChallengeCTF> listHistorySubmitChallengeCTF =
+                historyAcceptChallengeRepository.findTop8ByUserOrderByCreatedAtDesc(userOptional.get());
+        List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFResponses = new ArrayList<>();
+        listHistorySubmitChallengeCTF.forEach(historySubmitChallengeCTF -> {
             HistorySubmitChallengeCTFResponse response = getHistorySubmitChallengeCTFResponse(historySubmitChallengeCTF);
-            historySubmitChallengeCTFsResponses.add(response);
+            historySubmitChallengeCTFResponses.add(response);
         });
-        HistorySubmitChallengeCTFPageableResponse historySubmitChallengeCTFPageableResponse
-                = new HistorySubmitChallengeCTFPageableResponse();
-        historySubmitChallengeCTFPageableResponse.setData(historySubmitChallengeCTFsResponses)
-                .setTotalItems(historySubmitChallengeCTFPage.getTotalElements())
-                .setCurrentPage(historySubmitChallengeCTFPage.getNumber())
-                .setTotalPages(historySubmitChallengeCTFPage.getTotalPages());
-        return historySubmitChallengeCTFPageableResponse;
+        return historySubmitChallengeCTFResponses;
     }
 
     @Override

@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
 import java.time.Instant;
 
 @Data
@@ -29,11 +28,11 @@ public class ChallengeCTFResponseDTO {
     @JsonProperty("updated_at")
     private Instant updatedAt;
     @JsonProperty("is_complete")
-    private boolean isCompleted;
+    private Boolean isCompleted;
 
     public ChallengeCTFResponseDTO(Integer id, String title, String content, String level,
                                    String tag, String hint, String flag, Integer point, String urlFile,
-                                   Integer totalSolve, Instant createdAt, Instant updatedAt, boolean isCompleted) {
+                                   Integer totalSolve, Instant createdAt, Instant updatedAt, Boolean isCompleted) {
         this.id = id;
         this.title = title;
         this.content = content;

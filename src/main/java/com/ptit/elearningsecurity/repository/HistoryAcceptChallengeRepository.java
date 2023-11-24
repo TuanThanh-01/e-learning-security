@@ -8,8 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface HistoryAcceptChallengeRepository extends JpaRepository<HistorySubmitChallengeCTF, Integer> {
-    Page<HistorySubmitChallengeCTF> findAllByUser(User user, Pageable pageable);
+    List<HistorySubmitChallengeCTF> findTop8ByUserOrderByCreatedAtDesc(User user);
     Page<HistorySubmitChallengeCTF> findAllByChallengeCTF(ChallengeCTF challengeCTF, Pageable pageable);
 }

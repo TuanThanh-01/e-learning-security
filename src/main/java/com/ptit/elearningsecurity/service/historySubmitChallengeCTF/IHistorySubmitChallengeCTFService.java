@@ -7,12 +7,14 @@ import com.ptit.elearningsecurity.exception.ChallengeCTFCustomException;
 import com.ptit.elearningsecurity.exception.UserCustomException;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface IHistorySubmitChallengeCTFService {
     HistorySubmitChallengeCTFPageableResponse getAllHistorySubmit(Pageable pageable);
 
     HistorySubmitChallengeCTFResponse createHistorySubmit(HistorySubmitChallengeCTFRequest historySubmitChallengeCTFRequest) throws UserCustomException, ChallengeCTFCustomException;
 
-    HistorySubmitChallengeCTFPageableResponse getAllHistorySubmitByUser(Pageable pageable, Integer userId) throws UserCustomException;
+    List<HistorySubmitChallengeCTFResponse> getAllHistorySubmitByUser(Integer userId) throws UserCustomException;
 
     HistorySubmitChallengeCTFPageableResponse getAllHistorySubmitByChallengeCTF(Pageable pageable, Integer challengeCTFId) throws ChallengeCTFCustomException;
 
