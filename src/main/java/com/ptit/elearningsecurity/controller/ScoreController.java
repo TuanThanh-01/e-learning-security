@@ -23,6 +23,12 @@ public class ScoreController {
     private final ScoreService scoreService;
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<List<ScoreResponse>> getAllScore() {
+        return ResponseEntity.status(HttpStatus.OK).body(scoreService.getAllScore());
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/get-all-score-by-quiz/{quizId}")
     public ResponseEntity<List<ScoreResponse>> getAllScoreByQuiz(@PathVariable("quizId") int quizId) throws QuizCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(scoreService.getAllScoreByQuiz(quizId));
@@ -40,13 +46,13 @@ public class ScoreController {
         return ResponseEntity.status(HttpStatus.OK).body(scoreService.getScoreById(scoreId));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<ScoreResponse> createScore(@RequestBody ScoreRequest scoreRequest) throws QuizCustomException, UserCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(scoreService.createScore(scoreRequest));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<ScoreResponse> updateScore(@RequestBody ScoreRequest scoreRequest, @PathVariable("id") int scoreId) throws ScoreCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(scoreService.updateScore(scoreRequest, scoreId));

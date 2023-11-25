@@ -21,7 +21,12 @@ public class Score {
     private Integer score;
     private Instant createdAt;
     private Instant updatedAt;
-
+    @Column(name = "total_completion_time")
+    private String totalCompletionTime;
+    @Column(name = "total_correct_answer")
+    private Integer totalCorrectAnswer;
+    @Column(name = "total_wrong_answer")
+    private Integer totalWrongAnswer;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

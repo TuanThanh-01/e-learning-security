@@ -36,21 +36,14 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
     private final ChallengeCTFRepository challengeCTFRepository;
 
     @Override
-    public HistorySubmitChallengeCTFPageableResponse getAllHistorySubmit(Pageable pageable) {
-        Page<HistorySubmitChallengeCTF> historySubmitChallengeCTFPage = historyAcceptChallengeRepository.findAll(pageable);
-        List<HistorySubmitChallengeCTF> historySubmitChallengeCTFList = historySubmitChallengeCTFPage.getContent();
-        List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFsResponses = new ArrayList<>();
+    public List<HistorySubmitChallengeCTFResponse> getAllHistorySubmit() {
+        List<HistorySubmitChallengeCTF> historySubmitChallengeCTFList = historyAcceptChallengeRepository.findAllByOrderByCreatedAtDesc();
+        List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFResponses = new ArrayList<>();
         historySubmitChallengeCTFList.forEach(historySubmitChallengeCTF -> {
             HistorySubmitChallengeCTFResponse response = getHistorySubmitChallengeCTFResponse(historySubmitChallengeCTF);
-            historySubmitChallengeCTFsResponses.add(response);
+            historySubmitChallengeCTFResponses.add(response);
         });
-        HistorySubmitChallengeCTFPageableResponse historySubmitChallengeCTFPageableResponse
-                = new HistorySubmitChallengeCTFPageableResponse();
-        historySubmitChallengeCTFPageableResponse.setData(historySubmitChallengeCTFsResponses)
-                .setTotalItems(historySubmitChallengeCTFPage.getTotalElements())
-                .setCurrentPage(historySubmitChallengeCTFPage.getNumber())
-                .setTotalPages(historySubmitChallengeCTFPage.getTotalPages());
-        return historySubmitChallengeCTFPageableResponse;
+        return historySubmitChallengeCTFResponses;
     }
 
     private HistorySubmitChallengeCTFResponse getHistorySubmitChallengeCTFResponse(HistorySubmitChallengeCTF historySubmitChallengeCTF) {
@@ -85,6 +78,8 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
             if(!challengeCTFResult.isCompleted() && historySubmitChallengeCTF.getStatus().equals("accept")) {
                 user.setScoredChallengeCTF(user.getScoredChallengeCTF() + challengeCTF.getPoint());
                 challengeCTFResult.setCompleted(true);
+                challengeCTF.setTotalSolve(challengeCTF.getTotalSolve() + 1);
+                challengeCTFRepository.save(challengeCTF);
                 userRepository.save(user);
                 challengeCTFResultRepository.save(challengeCTFResult);
             }
@@ -92,6 +87,8 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
         else {
             if(historySubmitChallengeCTFSaved.getStatus().equals("accept")) {
                 user.setScoredChallengeCTF(user.getScoredChallengeCTF() + challengeCTF.getPoint());
+                challengeCTF.setTotalSolve(challengeCTF.getTotalSolve() + 1);
+                challengeCTFRepository.save(challengeCTF);
                 userRepository.save(user);
             }
             ChallengeCTFResult challengeCTFResult = new ChallengeCTFResult();
@@ -101,8 +98,6 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
                     .setCreatedAt(Instant.now());
             challengeCTFResultRepository.save(challengeCTFResult);
         }
-
-
         return getHistorySubmitChallengeCTFResponse(historySubmitChallengeCTFSaved);
     }
 

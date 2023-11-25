@@ -37,6 +37,19 @@ public class ScoreService implements IScoreService{
     private final QuizMapper quizMapper;
 
     @Override
+    public List<ScoreResponse> getAllScore() {
+        List<Score> scores = scoreRepository.findAll();
+        List<ScoreResponse> scoreResponses = new ArrayList<>();
+        scores.forEach(score -> {
+            ScoreResponse scoreResponse = scoreMapper.toResponse(score);
+            scoreResponse.setUserResponse(userMapper.toResponse(score.getUser()));
+            scoreResponse.setQuizResponse(quizMapper.toResponse(score.getQuiz()));
+            scoreResponses.add(scoreResponse);
+        });
+        return scoreResponses;
+    }
+
+    @Override
     public List<ScoreResponse> getAllScoreByQuiz(int quizId) throws QuizCustomException {
         Optional<Quiz> quizOptional = quizRepository.findById(quizId);
         if(quizOptional.isEmpty()) {
@@ -48,6 +61,7 @@ public class ScoreService implements IScoreService{
             ScoreResponse scoreResponse = scoreMapper.toResponse(score);
             scoreResponse.setUserResponse(userMapper.toResponse(score.getUser()));
             scoreResponse.setQuizResponse(quizMapper.toResponse(score.getQuiz()));
+            scoreResponses.add(scoreResponse);
         });
         return scoreResponses;
     }
@@ -64,6 +78,7 @@ public class ScoreService implements IScoreService{
             ScoreResponse scoreResponse = scoreMapper.toResponse(score);
             scoreResponse.setUserResponse(userMapper.toResponse(score.getUser()));
             scoreResponse.setQuizResponse(quizMapper.toResponse(score.getQuiz()));
+            scoreResponses.add(scoreResponse);
         });
         return scoreResponses;
     }
@@ -83,7 +98,7 @@ public class ScoreService implements IScoreService{
 
     @Override
     public ScoreResponse createScore(ScoreRequest scoreRequest) throws QuizCustomException, UserCustomException {
-        Optional<Quiz> quizOptional = quizRepository.findById(scoreRequest.getQuizId());
+        Optional<Quiz> quizOptional = quizRepository.findByName(scoreRequest.getQuizTitle());
         if(quizOptional.isEmpty()) {
             throw new QuizCustomException("Quiz Not Found", DataUtils.ERROR_QUIZ_NOT_FOUND);
         }

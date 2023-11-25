@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface HistoryAcceptChallengeRepository extends JpaRepository<HistorySubmitChallengeCTF, Integer> {
+    List<HistorySubmitChallengeCTF> findAllByOrderByCreatedAtDesc();
     List<HistorySubmitChallengeCTF> findTop8ByUserOrderByCreatedAtDesc(User user);
     Page<HistorySubmitChallengeCTF> findAllByChallengeCTF(ChallengeCTF challengeCTF, Pageable pageable);
 }

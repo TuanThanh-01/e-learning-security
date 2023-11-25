@@ -136,4 +136,12 @@ public class RestControllerEntityExceptionHandler extends ResponseEntityExceptio
                 .setErrorMessage(exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(JwtTokenCustomException.class)
+    public ResponseEntity<ErrorResponse> handleJwtTokenCustomException(JwtTokenCustomException exception) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setErrorCode(exception.getErrorCode())
+                .setErrorMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }

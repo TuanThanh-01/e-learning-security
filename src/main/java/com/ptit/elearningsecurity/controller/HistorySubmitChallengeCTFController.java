@@ -21,16 +21,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/history-submit")
 public class HistorySubmitChallengeCTFController {
+
     private final HistorySubmitChallengeCTFService historySubmitChallengeCTFService;
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<HistorySubmitChallengeCTFPageableResponse> getAllHistorySubmit(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable paging = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(historySubmitChallengeCTFService.getAllHistorySubmit(paging));
+    public ResponseEntity<List<HistorySubmitChallengeCTFResponse>> getAllHistorySubmit() {
+        return ResponseEntity.status(HttpStatus.OK).body(historySubmitChallengeCTFService.getAllHistorySubmit());
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")

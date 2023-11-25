@@ -15,6 +15,12 @@ public class ScoreResponse {
     private Instant createdAt;
     @JsonProperty("updated_at")
     private Instant updatedAt;
+    @JsonProperty("total_completion_time")
+    private String totalCompletionTime;
+    @JsonProperty("total_correct_answer")
+    private Integer totalCorrectAnswer;
+    @JsonProperty("total_wrong_answer")
+    private Integer totalWrongAnswer;
     @JsonProperty("user")
     private UserResponse userResponse;
     @JsonProperty("quiz")
