@@ -66,7 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (SignatureException ex) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print("Invalid JWT signature");
-
         } catch (MalformedJwtException ex) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
