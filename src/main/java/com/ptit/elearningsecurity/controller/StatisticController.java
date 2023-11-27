@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.controller;
 
+import com.ptit.elearningsecurity.data.dto.QuizCorrectWrongDTO;
 import com.ptit.elearningsecurity.data.dto.QuizScoreDTO;
 import com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO;
 import com.ptit.elearningsecurity.data.dto.StatisticQuiz;
@@ -42,5 +43,10 @@ public class StatisticController {
     @GetMapping("/quiz-time-completion-avg")
     public ResponseEntity<List<QuizTimeCompletionDTO>> getQuizTimeCompletionAvg() {
         return ResponseEntity.status(HttpStatus.OK).body(quizStatisticService.findQuizTimeCompletionAvg());
+    }
+
+    @GetMapping("/quiz-correct-wrong")
+    public ResponseEntity<List<QuizCorrectWrongDTO>> getQuizCorrectWrong() {
+        return ResponseEntity.status(HttpStatus.OK).body(quizStatisticService.findQuizCorrectWrong());
     }
 }

@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.service.statistic;
 
+import com.ptit.elearningsecurity.data.dto.QuizCorrectWrongDTO;
 import com.ptit.elearningsecurity.data.dto.QuizScoreDTO;
 import com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO;
 import com.ptit.elearningsecurity.data.dto.StatisticQuiz;
@@ -9,6 +10,7 @@ import com.ptit.elearningsecurity.repository.ScoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,10 +35,32 @@ public class QuizStatisticService implements IQuizStatisticService{
 
     @Override
     public List<QuizTimeCompletionDTO> findQuizTimeCompletionAvg() {
-        List<QuizTimeCompletionDTO> test = scoreRepository.findQuizAndAverageTimeCompletion();
-        for(QuizTimeCompletionDTO quizTimeCompletionDTO : test) {
-            System.out.println(quizTimeCompletionDTO);
-        }
-        return scoreRepository.findQuizAndAverageTimeCompletion();
+        List<QuizTimeCompletionDTO> quizTimeCompletionDTOList =
+                scoreRepository.findQuizAndAverageTimeCompletion();
+        List<QuizTimeCompletionDTO> result = new ArrayList<>();
+        quizTimeCompletionDTOList.forEach(quizTimeCompletionDTO -> {
+            QuizTimeCompletionDTO quizTimeCompletionDTOTemp = new QuizTimeCompletionDTO();
+            quizTimeCompletionDTOTemp.setQuizTitle(quizTimeCompletionDTO.getQuizTitle());
+            quizTimeCompletionDTOTemp.setTimeAvg(quizTimeCompletionDTO.getTimeAvg().split("\\.")[0]);
+            result.add(quizTimeCompletionDTOTemp);
+        });
+        return result;
+    }
+
+    @Override
+    public List<QuizCorrectWrongDTO> findQuizCorrectWrong() {
+        List<QuizCorrectWrongDTO> quizCorrectWrongDTOList = scoreRepository.findQuizAndCorrectWrongAnswer();
+        List<QuizCorrectWrongDTO> result = new ArrayList<>();
+        quizCorrectWrongDTOList.forEach(quizCorrectWrongDTO -> {
+            QuizCorrectWrongDTO quizCorrectWrongDTOTemp = new QuizCorrectWrongDTO();
+            quizCorrectWrongDTOTemp.setQuizTitle(quizCorrectWrongDTO.getQuizTitle());
+            long total = quizCorrectWrongDTO.getTotalCorrect() + quizCorrectWrongDTO.getTotalWrong();
+            long percentageCorrect = quizCorrectWrongDTO.getTotalCorrect() * 100 / total;
+            long percentageWrong = 100 - percentageCorrect;
+            quizCorrectWrongDTOTemp.setTotalCorrect(percentageCorrect);
+            quizCorrectWrongDTOTemp.setTotalWrong(percentageWrong);
+            result.add(quizCorrectWrongDTOTemp);
+        });
+        return result;
     }
 }

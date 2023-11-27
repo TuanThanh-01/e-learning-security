@@ -1,5 +1,6 @@
 package com.ptit.elearningsecurity.repository;
 
+import com.ptit.elearningsecurity.data.dto.QuizCorrectWrongDTO;
 import com.ptit.elearningsecurity.data.dto.QuizScoreDTO;
 import com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO;
 import com.ptit.elearningsecurity.entity.User;
@@ -21,8 +22,15 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
             "GROUP BY s.quiz.id")
     List<QuizScoreDTO> findQuizAndAverageScore();
 
-    @Query("SELECT s.quiz.name as quizTitle, SEC_TO_TIME(AVG(TIME_TO_SEC(s.totalCompletionTime))) as timeAvg " +
+    @Query("SELECT new com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO(s.quiz.name, " +
+            "cast(SEC_TO_TIME(AVG(TIME_TO_SEC(s.totalCompletionTime))) as string)) " +
             "FROM Score s " +
             "GROUP BY s.quiz.id")
     List<QuizTimeCompletionDTO> findQuizAndAverageTimeCompletion();
+
+    @Query("SELECT new com.ptit.elearningsecurity.data.dto.QuizCorrectWrongDTO(s.quiz.name, " +
+            "sum(s.totalCorrectAnswer), sum(s.totalWrongAnswer)) " +
+            "FROM Score s " +
+            "group by s.quiz.id")
+    List<QuizCorrectWrongDTO> findQuizAndCorrectWrongAnswer();
 }

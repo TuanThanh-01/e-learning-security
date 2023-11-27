@@ -28,7 +28,7 @@ public class UserStatisticChallengeCTFService implements IUserStatisticChallenge
 
         List<TotalTagChallenge> listTotalTag = challengeCTFRepository.findTotalTag();
         List<TotalTagChallenge> listChallengeCTFCompletedByTagForUser =
-                challengeCTFRepository.findTotalChallngeCompletedByTagForUser(userId);
+                challengeCTFRepository.findTotalChallengeCompletedByTagForUser(userId);
         listTotalTag.add(new TotalTagChallenge("all", calculateTotalRecord(listTotalTag)));
         listChallengeCTFCompletedByTagForUser.add(
                 new TotalTagChallenge("all", calculateTotalRecord(listChallengeCTFCompletedByTagForUser)));
@@ -37,17 +37,7 @@ public class UserStatisticChallengeCTFService implements IUserStatisticChallenge
     }
 
     private UserStatisticChallengeCTFResponse getUserStatisticChallengeCTFResponse(User user, List<TotalTagChallenge> listTotalTag, List<TotalTagChallenge> listChallengeCTFCompletedByTagForUser) {
-        HashMap<String, Integer> mapPercentageTagResult = new HashMap<>();
-        for (int i = 0; i < listChallengeCTFCompletedByTagForUser.size(); i++) {
-            if (listTotalTag.get(i).getTotalChallenge() == 0) {
-                mapPercentageTagResult.put(listChallengeCTFCompletedByTagForUser.get(i).getTag(), 0);
-            }
-            else {
-                Integer percentage = Math.toIntExact(listChallengeCTFCompletedByTagForUser.get(i).getTotalChallenge() * 100
-                        / listTotalTag.get(i).getTotalChallenge());
-                mapPercentageTagResult.put(listChallengeCTFCompletedByTagForUser.get(i).getTag(), percentage);
-            }
-        }
+        HashMap<String, Integer> mapPercentageTagResult = getMapPercentageResult(listTotalTag, listChallengeCTFCompletedByTagForUser);
         UserStatisticChallengeCTFResponse userStatisticChallengeCTFResponse = new UserStatisticChallengeCTFResponse();
         userStatisticChallengeCTFResponse.setStudentIdentity(user.getStudentIdentity())
                 .setUserScore(user.getScoredChallengeCTF())
@@ -59,6 +49,21 @@ public class UserStatisticChallengeCTFService implements IUserStatisticChallenge
                 .setPercentageMiscellaneous(mapPercentageTagResult.get("miscellaneous"))
                 .setPercentageAll(mapPercentageTagResult.get("all"));
         return userStatisticChallengeCTFResponse;
+    }
+
+    private static HashMap<String, Integer> getMapPercentageResult(List<TotalTagChallenge> listTotalTag, List<TotalTagChallenge> listChallengeCTFCompletedByTagForUser) {
+        HashMap<String, Integer> mapPercentageTagResult = new HashMap<>();
+        for (int i = 0; i < listChallengeCTFCompletedByTagForUser.size(); i++) {
+            if (listTotalTag.get(i).getTotalChallenge() == 0) {
+                mapPercentageTagResult.put(listChallengeCTFCompletedByTagForUser.get(i).getTag(), 0);
+            }
+            else {
+                Integer percentage = Math.toIntExact(listChallengeCTFCompletedByTagForUser.get(i).getTotalChallenge() * 100
+                        / listTotalTag.get(i).getTotalChallenge());
+                mapPercentageTagResult.put(listChallengeCTFCompletedByTagForUser.get(i).getTag(), percentage);
+            }
+        }
+        return mapPercentageTagResult;
     }
 
     private Long calculateTotalRecord(List<TotalTagChallenge> listTotalTagChallenge) {

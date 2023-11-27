@@ -37,5 +37,5 @@ public interface ChallengeCTFRepository extends JpaRepository<ChallengeCTF, Inte
             "LEFT JOIN ChallengeCTFResult r " +
             "ON c.id = r.challengeCTF.id AND r.user.id = :userId " +
             "group by c.tag")
-    List<TotalTagChallenge> findTotalChallngeCompletedByTagForUser(@Param("userId") Integer userId);
+    List<TotalTagChallenge> findTotalChallengeCompletedByTagForUser(@Param("userId") Integer userId);
 }
