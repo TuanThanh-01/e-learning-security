@@ -4,6 +4,7 @@ import com.ptit.elearningsecurity.data.dto.QuizCorrectWrongDTO;
 import com.ptit.elearningsecurity.data.dto.QuizScoreDTO;
 import com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO;
 import com.ptit.elearningsecurity.data.dto.StatisticQuiz;
+import com.ptit.elearningsecurity.data.response.QuizTimeCompletionResponse;
 import com.ptit.elearningsecurity.data.response.UserStatisticChallengeCTFResponse;
 import com.ptit.elearningsecurity.exception.UserCustomException;
 import com.ptit.elearningsecurity.service.statistic.QuizStatisticService;
@@ -41,7 +42,7 @@ public class StatisticController {
     }
 
     @GetMapping("/quiz-time-completion-avg")
-    public ResponseEntity<List<QuizTimeCompletionDTO>> getQuizTimeCompletionAvg() {
+    public ResponseEntity<List<QuizTimeCompletionResponse>> getQuizTimeCompletionAvg() {
         return ResponseEntity.status(HttpStatus.OK).body(quizStatisticService.findQuizTimeCompletionAvg());
     }
 

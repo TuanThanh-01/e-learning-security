@@ -4,6 +4,7 @@ import com.ptit.elearningsecurity.data.dto.QuizCorrectWrongDTO;
 import com.ptit.elearningsecurity.data.dto.QuizScoreDTO;
 import com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO;
 import com.ptit.elearningsecurity.data.dto.StatisticQuiz;
+import com.ptit.elearningsecurity.data.response.QuizTimeCompletionResponse;
 import com.ptit.elearningsecurity.repository.QuestionRepository;
 import com.ptit.elearningsecurity.repository.QuizRepository;
 import com.ptit.elearningsecurity.repository.ScoreRepository;
@@ -34,17 +35,22 @@ public class QuizStatisticService implements IQuizStatisticService{
     }
 
     @Override
-    public List<QuizTimeCompletionDTO> findQuizTimeCompletionAvg() {
+    public List<QuizTimeCompletionResponse> findQuizTimeCompletionAvg() {
         List<QuizTimeCompletionDTO> quizTimeCompletionDTOList =
                 scoreRepository.findQuizAndAverageTimeCompletion();
-        List<QuizTimeCompletionDTO> result = new ArrayList<>();
+        List<QuizTimeCompletionResponse> result = new ArrayList<>();
         quizTimeCompletionDTOList.forEach(quizTimeCompletionDTO -> {
-            QuizTimeCompletionDTO quizTimeCompletionDTOTemp = new QuizTimeCompletionDTO();
-            quizTimeCompletionDTOTemp.setQuizTitle(quizTimeCompletionDTO.getQuizTitle());
-            quizTimeCompletionDTOTemp.setTimeAvg(quizTimeCompletionDTO.getTimeAvg().split("\\.")[0]);
-            result.add(quizTimeCompletionDTOTemp);
+            QuizTimeCompletionResponse quizTimeCompletionResponse = new QuizTimeCompletionResponse();
+            quizTimeCompletionResponse.setQuizTitle(quizTimeCompletionDTO.getQuizTitle());
+            quizTimeCompletionResponse.setTimeAvg(convertToSecond(quizTimeCompletionDTO.getTimeAvg()));
+            result.add(quizTimeCompletionResponse);
         });
         return result;
+    }
+
+    private Integer convertToSecond(String time) {
+        String [] parts = time.split(":");
+        return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
     }
 
     @Override
