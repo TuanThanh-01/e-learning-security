@@ -5,6 +5,7 @@ import com.ptit.elearningsecurity.data.dto.QuizScoreDTO;
 import com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO;
 import com.ptit.elearningsecurity.data.dto.StatisticQuiz;
 import com.ptit.elearningsecurity.data.response.QuizTimeCompletionResponse;
+import com.ptit.elearningsecurity.data.response.StatisticUserQuizResponse;
 import com.ptit.elearningsecurity.data.response.UserStatisticChallengeCTFResponse;
 import com.ptit.elearningsecurity.exception.UserCustomException;
 import com.ptit.elearningsecurity.service.statistic.QuizStatisticService;
@@ -49,5 +50,10 @@ public class StatisticController {
     @GetMapping("/quiz-correct-wrong")
     public ResponseEntity<List<QuizCorrectWrongDTO>> getQuizCorrectWrong() {
         return ResponseEntity.status(HttpStatus.OK).body(quizStatisticService.findQuizCorrectWrong());
+    }
+
+    @GetMapping("/user-quiz")
+    public ResponseEntity<List<StatisticUserQuizResponse>> getUserQuiz() {
+        return ResponseEntity.status(HttpStatus.OK).body(quizStatisticService.findStatisticUserQuiz());
     }
 }

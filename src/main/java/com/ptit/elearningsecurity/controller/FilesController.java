@@ -18,7 +18,6 @@ public class FilesController {
 
     private final ChallengeCTFService challengeCTFService;
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/files/{filename:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         Resource file = challengeCTFService.load(filename);

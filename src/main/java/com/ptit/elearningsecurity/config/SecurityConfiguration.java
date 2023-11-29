@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
+                .antMatchers("/files/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .authenticationProvider(authenticationProvider)
@@ -68,7 +69,7 @@ public class SecurityConfiguration {
     @Order(0)
     SecurityFilterChain resources(HttpSecurity http) throws Exception {
         http
-                .requestMatchers((matchers) -> matchers.antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**"))
+                .requestMatchers((matchers) -> matchers.antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**", "/uploads"))
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
                 .requestCache().disable()
                 .securityContext().disable()

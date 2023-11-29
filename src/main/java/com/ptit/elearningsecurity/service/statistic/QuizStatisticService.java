@@ -1,10 +1,8 @@
 package com.ptit.elearningsecurity.service.statistic;
 
-import com.ptit.elearningsecurity.data.dto.QuizCorrectWrongDTO;
-import com.ptit.elearningsecurity.data.dto.QuizScoreDTO;
-import com.ptit.elearningsecurity.data.dto.QuizTimeCompletionDTO;
-import com.ptit.elearningsecurity.data.dto.StatisticQuiz;
+import com.ptit.elearningsecurity.data.dto.*;
 import com.ptit.elearningsecurity.data.response.QuizTimeCompletionResponse;
+import com.ptit.elearningsecurity.data.response.StatisticUserQuizResponse;
 import com.ptit.elearningsecurity.repository.QuestionRepository;
 import com.ptit.elearningsecurity.repository.QuizRepository;
 import com.ptit.elearningsecurity.repository.ScoreRepository;
@@ -68,5 +66,24 @@ public class QuizStatisticService implements IQuizStatisticService{
             result.add(quizCorrectWrongDTOTemp);
         });
         return result;
+    }
+
+    @Override
+    public List<StatisticUserQuizResponse> findStatisticUserQuiz() {
+        List<StatisticUserQuizDTO> statisticUserQuizDTOList = scoreRepository.findAllStatisticUserQuiz();
+        List<StatisticUserQuizResponse> statisticUserQuizResponseList = new ArrayList<>();
+        statisticUserQuizDTOList.forEach(statisticUserQuizDTO -> {
+            StatisticUserQuizResponse statisticUserQuizResponse = new StatisticUserQuizResponse();
+            statisticUserQuizResponse.setUsername(statisticUserQuizDTO.getLastname() + " " + statisticUserQuizDTO.getFirstname())
+                    .setStudentIdentity(statisticUserQuizDTO.getStudentIdentity())
+                    .setQuizTitle(statisticUserQuizDTO.getQuizTitle())
+                    .setAvgScore(statisticUserQuizDTO.getAvgScore())
+                    .setAvgTotalCorrectAnswer(statisticUserQuizDTO.getAvgTotalCorrectAnswer())
+                    .setAvgTotalWrongAnswer(statisticUserQuizDTO.getAvgTotalWrongAnswer())
+                    .setTotalTry(statisticUserQuizDTO.getTotalTry())
+                    .setTimeAvg(statisticUserQuizDTO.getTimeAvg().substring(0, 5));
+            statisticUserQuizResponseList.add(statisticUserQuizResponse);
+        });
+        return statisticUserQuizResponseList;
     }
 }
