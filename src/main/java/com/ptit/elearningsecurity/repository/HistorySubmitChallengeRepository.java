@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HistoryAcceptChallengeRepository extends JpaRepository<HistorySubmitChallengeCTF, Integer> {
+public interface HistorySubmitChallengeRepository extends JpaRepository<HistorySubmitChallengeCTF, Integer> {
     List<HistorySubmitChallengeCTF> findAllByOrderByCreatedAtDesc();
     List<HistorySubmitChallengeCTF> findTop8ByUserOrderByCreatedAtDesc(User user);
     Page<HistorySubmitChallengeCTF> findAllByChallengeCTF(ChallengeCTF challengeCTF, Pageable pageable);

@@ -13,7 +13,7 @@ import com.ptit.elearningsecurity.exception.ChallengeCTFCustomException;
 import com.ptit.elearningsecurity.exception.UserCustomException;
 import com.ptit.elearningsecurity.repository.ChallengeCTFRepository;
 import com.ptit.elearningsecurity.repository.ChallengeCTFResultRepository;
-import com.ptit.elearningsecurity.repository.HistoryAcceptChallengeRepository;
+import com.ptit.elearningsecurity.repository.HistorySubmitChallengeRepository;
 import com.ptit.elearningsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HistorySubmitChallengeCTFService implements IHistorySubmitChallengeCTFService {
 
-    private final HistoryAcceptChallengeRepository historyAcceptChallengeRepository;
+    private final HistorySubmitChallengeRepository historySubmitChallengeRepository;
     private final ChallengeCTFResultRepository challengeCTFResultRepository;
     private final HistorySubmitChallengeCTFMapper historySubmitChallengeCTFMapper;
     private final UserRepository userRepository;
@@ -37,7 +37,7 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
 
     @Override
     public List<HistorySubmitChallengeCTFResponse> getAllHistorySubmit() {
-        List<HistorySubmitChallengeCTF> historySubmitChallengeCTFList = historyAcceptChallengeRepository.findAllByOrderByCreatedAtDesc();
+        List<HistorySubmitChallengeCTF> historySubmitChallengeCTFList = historySubmitChallengeRepository.findAllByOrderByCreatedAtDesc();
         List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFResponses = new ArrayList<>();
         historySubmitChallengeCTFList.forEach(historySubmitChallengeCTF -> {
             HistorySubmitChallengeCTFResponse response = getHistorySubmitChallengeCTFResponse(historySubmitChallengeCTF);
@@ -69,7 +69,7 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
         HistorySubmitChallengeCTF historySubmitChallengeCTF = historySubmitChallengeCTFMapper.toPojo(historySubmitChallengeCTFRequest);
         historySubmitChallengeCTF.setUser(user);
         historySubmitChallengeCTF.setChallengeCTF(challengeCTF);
-        HistorySubmitChallengeCTF historySubmitChallengeCTFSaved = historyAcceptChallengeRepository.save(historySubmitChallengeCTF);
+        HistorySubmitChallengeCTF historySubmitChallengeCTFSaved = historySubmitChallengeRepository.save(historySubmitChallengeCTF);
 
         if(challengeCTFResultRepository.existsByChallengeCTFAndUser(challengeCTF, user)){
             Optional<ChallengeCTFResult> challengeCTFResultOptional =
@@ -108,7 +108,7 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
             throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         List<HistorySubmitChallengeCTF> listHistorySubmitChallengeCTF =
-                historyAcceptChallengeRepository.findTop8ByUserOrderByCreatedAtDesc(userOptional.get());
+                historySubmitChallengeRepository.findTop8ByUserOrderByCreatedAtDesc(userOptional.get());
         List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFResponses = new ArrayList<>();
         listHistorySubmitChallengeCTF.forEach(historySubmitChallengeCTF -> {
             HistorySubmitChallengeCTFResponse response = getHistorySubmitChallengeCTFResponse(historySubmitChallengeCTF);
@@ -125,7 +125,7 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
             throw new ChallengeCTFCustomException("Challenge CTF Not Found", DataUtils.ERROR_CHALLENGE_CTF_NOT_FOUND);
         }
         Page<HistorySubmitChallengeCTF> historySubmitChallengeCTFPage =
-                historyAcceptChallengeRepository.findAllByChallengeCTF(challengeCTFOptional.get(), pageable);
+                historySubmitChallengeRepository.findAllByChallengeCTF(challengeCTFOptional.get(), pageable);
         List<HistorySubmitChallengeCTF> historySubmitChallengeCTFList = historySubmitChallengeCTFPage.getContent();
         List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFsResponses = new ArrayList<>();
         historySubmitChallengeCTFList.forEach(historySubmitChallengeCTF -> {

@@ -1,6 +1,8 @@
 package com.ptit.elearningsecurity.repository;
 
 import com.ptit.elearningsecurity.data.dto.ChallengeCTFResponseDTO;
+import com.ptit.elearningsecurity.data.dto.TagTotalCompleteChallengeCTF;
+import com.ptit.elearningsecurity.data.dto.TagTotalSubmitChallengeCTF;
 import com.ptit.elearningsecurity.data.dto.TotalTagChallenge;
 import com.ptit.elearningsecurity.entity.labCTF.ChallengeCTF;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,4 +40,22 @@ public interface ChallengeCTFRepository extends JpaRepository<ChallengeCTF, Inte
             "ON c.id = r.challengeCTF.id AND r.user.id = :userId " +
             "group by c.tag")
     List<TotalTagChallenge> findTotalChallengeCompletedByTagForUser(@Param("userId") Integer userId);
+
+    @Query("SELECT COUNT(distinct tag) from ChallengeCTF")
+    Long getTotalTag();
+
+    @Query("SELECT new com.ptit.elearningsecurity.data.dto.TagTotalCompleteChallengeCTF(c.tag, count(*)) " +
+            "FROM ChallengeCTFResult r " +
+            "INNER JOIN ChallengeCTF c " +
+            "ON c.id = r.challengeCTF.id " +
+            "WHERE r.isCompleted = true " +
+            "GROUP BY c.tag")
+    List<TagTotalCompleteChallengeCTF> findTagTotalCompleteChallengeCTF();
+
+    @Query("SELECT new com.ptit.elearningsecurity.data.dto.TagTotalSubmitChallengeCTF(c.tag, count(*)) " +
+            "FROM HistorySubmitChallengeCTF h " +
+            "INNER JOIN ChallengeCTF c " +
+            "ON c.id = h.challengeCTF.id " +
+            "GROUP BY c.tag")
+    List<TagTotalSubmitChallengeCTF> findTagTotalSubmitChallengeCTF();
 }
