@@ -20,8 +20,8 @@ public class QuizStatisticService implements IQuizStatisticService{
     private final ScoreRepository scoreRepository;
 
     @Override
-    public StatisticQuiz findStatisticQuizOverView() {
-        return new StatisticQuiz()
+    public StatisticQuizDTO findStatisticQuizOverView() {
+        return new StatisticQuizDTO()
                 .setTotalQuiz(quizRepository.count())
                 .setTotalQuestion(questionRepository.count())
                 .setTotalSolve(scoreRepository.count());

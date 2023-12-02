@@ -7,11 +7,11 @@ import lombok.experimental.Accessors;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class TagTotalSubmitChallengeCTF {
+public class TagTotalSubmitChallengeCTFDTO {
     private String tag;
     private Long totalSubmit;
 
-    public TagTotalSubmitChallengeCTF(String tag, Long totalSubmit) {
+    public TagTotalSubmitChallengeCTFDTO(String tag, Long totalSubmit) {
         this.tag = tag;
         this.totalSubmit = totalSubmit;
     }

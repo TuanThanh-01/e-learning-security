@@ -7,12 +7,12 @@ import lombok.experimental.Accessors;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class TotalTagChallenge {
+public class TagTotalUnCompleteChallengeCTFDTO {
     private String tag;
-    private Long totalChallenge;
+    private Long totalUnComplete;
 
-    public TotalTagChallenge(String tag, Long totalChallenge) {
+    public TagTotalUnCompleteChallengeCTFDTO(String tag, Long totalUnComplete) {
         this.tag = tag;
-        this.totalChallenge = totalChallenge;
+        this.totalUnComplete = totalUnComplete;
     }
 }

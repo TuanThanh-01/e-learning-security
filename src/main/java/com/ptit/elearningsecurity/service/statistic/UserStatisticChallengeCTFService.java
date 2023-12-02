@@ -1,7 +1,7 @@
 package com.ptit.elearningsecurity.service.statistic;
 
 import com.ptit.elearningsecurity.common.DataUtils;
-import com.ptit.elearningsecurity.data.dto.TotalTagChallenge;
+import com.ptit.elearningsecurity.data.dto.TotalTagChallengeDTO;
 import com.ptit.elearningsecurity.data.response.UserStatisticChallengeCTFResponse;
 import com.ptit.elearningsecurity.entity.User;
 import com.ptit.elearningsecurity.exception.UserCustomException;
@@ -26,17 +26,17 @@ public class UserStatisticChallengeCTFService implements IUserStatisticChallenge
         }
         User user = userOptional.get();
 
-        List<TotalTagChallenge> listTotalTag = challengeCTFRepository.findTotalTag();
-        List<TotalTagChallenge> listChallengeCTFCompletedByTagForUser =
+        List<TotalTagChallengeDTO> listTotalTag = challengeCTFRepository.findTotalTag();
+        List<TotalTagChallengeDTO> listChallengeCTFCompletedByTagForUser =
                 challengeCTFRepository.findTotalChallengeCompletedByTagForUser(userId);
-        listTotalTag.add(new TotalTagChallenge("all", calculateTotalRecord(listTotalTag)));
+        listTotalTag.add(new TotalTagChallengeDTO("all", calculateTotalRecord(listTotalTag)));
         listChallengeCTFCompletedByTagForUser.add(
-                new TotalTagChallenge("all", calculateTotalRecord(listChallengeCTFCompletedByTagForUser)));
+                new TotalTagChallengeDTO("all", calculateTotalRecord(listChallengeCTFCompletedByTagForUser)));
 
         return getUserStatisticChallengeCTFResponse(user, listTotalTag, listChallengeCTFCompletedByTagForUser);
     }
 
-    private UserStatisticChallengeCTFResponse getUserStatisticChallengeCTFResponse(User user, List<TotalTagChallenge> listTotalTag, List<TotalTagChallenge> listChallengeCTFCompletedByTagForUser) {
+    private UserStatisticChallengeCTFResponse getUserStatisticChallengeCTFResponse(User user, List<TotalTagChallengeDTO> listTotalTag, List<TotalTagChallengeDTO> listChallengeCTFCompletedByTagForUser) {
         HashMap<String, Integer> mapPercentageTagResult = getMapPercentageResult(listTotalTag, listChallengeCTFCompletedByTagForUser);
         UserStatisticChallengeCTFResponse userStatisticChallengeCTFResponse = new UserStatisticChallengeCTFResponse();
         userStatisticChallengeCTFResponse.setStudentIdentity(user.getStudentIdentity())
@@ -51,7 +51,7 @@ public class UserStatisticChallengeCTFService implements IUserStatisticChallenge
         return userStatisticChallengeCTFResponse;
     }
 
-    private static HashMap<String, Integer> getMapPercentageResult(List<TotalTagChallenge> listTotalTag, List<TotalTagChallenge> listChallengeCTFCompletedByTagForUser) {
+    private static HashMap<String, Integer> getMapPercentageResult(List<TotalTagChallengeDTO> listTotalTag, List<TotalTagChallengeDTO> listChallengeCTFCompletedByTagForUser) {
         HashMap<String, Integer> mapPercentageTagResult = new HashMap<>();
         for (int i = 0; i < listChallengeCTFCompletedByTagForUser.size(); i++) {
             if (listTotalTag.get(i).getTotalChallenge() == 0) {
@@ -66,10 +66,10 @@ public class UserStatisticChallengeCTFService implements IUserStatisticChallenge
         return mapPercentageTagResult;
     }
 
-    private Long calculateTotalRecord(List<TotalTagChallenge> listTotalTagChallenge) {
+    private Long calculateTotalRecord(List<TotalTagChallengeDTO> listTotalTagChallengeDTO) {
         Long result = 0L;
-        for (TotalTagChallenge totalTagChallenge : listTotalTagChallenge) {
-            result += totalTagChallenge.getTotalChallenge();
+        for (TotalTagChallengeDTO totalTagChallengeDTO : listTotalTagChallengeDTO) {
+            result += totalTagChallengeDTO.getTotalChallenge();
         }
         return result;
     }

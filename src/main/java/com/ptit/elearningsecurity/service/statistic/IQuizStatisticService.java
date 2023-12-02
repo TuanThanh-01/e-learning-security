@@ -7,7 +7,7 @@ import com.ptit.elearningsecurity.data.response.StatisticUserQuizResponse;
 import java.util.List;
 
 public interface IQuizStatisticService {
-    StatisticQuiz findStatisticQuizOverView();
+    StatisticQuizDTO findStatisticQuizOverView();
     List<QuizScoreDTO> findQuizScoreAvg();
     List<QuizTimeCompletionResponse> findQuizTimeCompletionAvg();
     List<QuizCorrectWrongDTO> findQuizCorrectWrong();

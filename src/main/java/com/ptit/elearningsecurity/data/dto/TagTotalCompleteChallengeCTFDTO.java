@@ -7,11 +7,11 @@ import lombok.experimental.Accessors;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class TagTotalCompleteChallengeCTF {
+public class TagTotalCompleteChallengeCTFDTO {
     private String tag;
     private Long totalCompleted;
 
-    public TagTotalCompleteChallengeCTF(String tag, Long totalCompleted) {
+    public TagTotalCompleteChallengeCTFDTO(String tag, Long totalCompleted) {
         this.tag = tag;
         this.totalCompleted = totalCompleted;
     }

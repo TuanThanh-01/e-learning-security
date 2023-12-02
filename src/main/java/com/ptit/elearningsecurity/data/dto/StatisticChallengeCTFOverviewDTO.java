@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true)
-public class StatisticQuiz {
-    @JsonProperty("total_quiz")
-    private Long totalQuiz;
-    @JsonProperty("total_question")
-    private Long totalQuestion;
-    @JsonProperty("total_solve")
-    private Long totalSolve;
+public class StatisticChallengeCTFOverviewDTO {
+    @JsonProperty("total_challenge")
+    private Long totalChallenge;
+    @JsonProperty("total_tag")
+    private Long totalTag;
+    @JsonProperty("total_submit")
+    private Long totalSubmit;
 }

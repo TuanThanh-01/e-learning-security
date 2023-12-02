@@ -32,7 +32,7 @@ public class StatisticController {
     }
 
     @GetMapping("/quiz-overview")
-    public ResponseEntity<StatisticQuiz> getStatisticQuizOverView() {
+    public ResponseEntity<StatisticQuizDTO> getStatisticQuizOverView() {
         return ResponseEntity.status(HttpStatus.OK).body(quizStatisticService.findStatisticQuizOverView());
     }
 
@@ -57,17 +57,32 @@ public class StatisticController {
     }
 
     @GetMapping("/challenge-ctf-overview")
-    public ResponseEntity<StatisticChallengeCTFOverview> getStatisticChallengeCTFOverview() {
+    public ResponseEntity<StatisticChallengeCTFOverviewDTO> getStatisticChallengeCTFOverview() {
         return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getStatisticChallengeCTFOverview());
     }
 
     @GetMapping("/tag-total-complete")
-    public ResponseEntity<List<TagTotalCompleteChallengeCTF>> getTagTotalCompleteChallengeCTF() {
+    public ResponseEntity<List<TagTotalCompleteChallengeCTFDTO>> getTagTotalCompleteChallengeCTF() {
         return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getTagTotalCompleteChallengeCTF());
     }
 
+    @GetMapping("/tag-total-un-complete")
+    public ResponseEntity<List<TagTotalUnCompleteChallengeCTFDTO>> getTagTotalUnCompleteChallengeCTF() {
+        return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getTagTotalUnCompleteChallengeCTF());
+    }
+
     @GetMapping("/tag-total-submit")
-    public ResponseEntity<List<TagTotalSubmitChallengeCTF>> getTagTotalSubmitChallengeCTF() {
+    public ResponseEntity<List<TagTotalSubmitChallengeCTFDTO>> getTagTotalSubmitChallengeCTF() {
         return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getTagTotalSubmitChallengeCTF());
+    }
+
+    @GetMapping("/tag-total-challenge")
+    public ResponseEntity<List<TagTotalChallengeCTFDTO>> getTagTotalChallengeCTF() {
+        return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getTagTotalChallengeCTF());
+    }
+
+    @GetMapping("/user-challenge-ctf")
+    public ResponseEntity<List<StatisticUserChallengeCTFDTO>> getUserChallengeCTF() {
+        return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getStatisticUserChallengeCTF());
     }
 }
