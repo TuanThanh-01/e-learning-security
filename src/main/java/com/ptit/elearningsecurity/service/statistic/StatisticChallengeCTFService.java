@@ -1,6 +1,7 @@
 package com.ptit.elearningsecurity.service.statistic;
 
 import com.ptit.elearningsecurity.data.dto.*;
+import com.ptit.elearningsecurity.data.response.ChallengeCTFDetailResponse;
 import com.ptit.elearningsecurity.repository.ChallengeCTFRepository;
 import com.ptit.elearningsecurity.repository.HistorySubmitChallengeRepository;
 import lombok.RequiredArgsConstructor;
@@ -65,5 +66,44 @@ public class StatisticChallengeCTFService implements IStatisticChallengeCTFServi
         return results;
     }
 
+    @Override
+    public List<UserChallengeCTFDetailDTO> getUserChallengeCTFDetail(Integer userId) {
+        return challengeCTFRepository.findUserChallengeCTFDetail(userId);
+    }
+
+    @Override
+    public List<StatisticChallengeCTFDTO> getStatisticChallengeCTF() {
+        List<StatisticChallengeCTFDTO> results = new ArrayList<>();
+        for (Object[] object : challengeCTFRepository.findStatisticChallengeCTF()) {
+            StatisticChallengeCTFDTO statisticChallengeCTFDTO = new StatisticChallengeCTFDTO();
+            statisticChallengeCTFDTO.setChallengeCTFId((Integer) object[0]);
+            statisticChallengeCTFDTO.setTitle((String) object[1]);
+            statisticChallengeCTFDTO.setLevel((String) object[2]);
+            statisticChallengeCTFDTO.setTag((String) object[3]);
+            statisticChallengeCTFDTO.setTotalSubmit((BigInteger) object[4]);
+            statisticChallengeCTFDTO.setTotalCorrect((BigDecimal) object[5]);
+            statisticChallengeCTFDTO.setTotalWrong((BigDecimal) object[6]);
+            results.add(statisticChallengeCTFDTO);
+        }
+        return results;
+    }
+
+    @Override
+    public List<ChallengeCTFDetailResponse> getChallengeCTFDetail(Integer challengeCTFId) {
+        List<ChallengeCTFDetailResponse> results = new ArrayList<>();
+        for (ChallengeCTFDetailDTO challengeCTFDetailDTO : challengeCTFRepository.findChallengeCTFDetail(challengeCTFId)){
+            ChallengeCTFDetailResponse challengeCTFDetailResponse = new ChallengeCTFDetailResponse();
+            challengeCTFDetailResponse.setTitle(challengeCTFDetailDTO.getTitle());
+            challengeCTFDetailResponse.setTag(challengeCTFDetailDTO.getTag());
+            challengeCTFDetailResponse.setLevel(challengeCTFDetailDTO.getLevel());
+            challengeCTFDetailResponse.setCreatedAt(challengeCTFDetailDTO.getCreatedAt());
+            challengeCTFDetailResponse.setStatus(challengeCTFDetailDTO.getStatus());
+            challengeCTFDetailResponse.setUsername(challengeCTFDetailDTO.getLastname()
+                    + " " + challengeCTFDetailDTO.getFirstname());
+            challengeCTFDetailResponse.setStudentIdentity(challengeCTFDetailDTO.getStudentIdentity());
+            results.add(challengeCTFDetailResponse);
+        }
+        return results;
+    }
 
 }

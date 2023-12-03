@@ -91,4 +91,38 @@ public interface ChallengeCTFRepository extends JpaRepository<ChallengeCTF, Inte
             "   GROUP BY user_id " +
             ") h ON h.user_id = u.id", nativeQuery = true)
     List<Object[]> findStatisticUserChallengeCTF();
+
+    @Query("SELECT new com.ptit.elearningsecurity.data.dto.UserChallengeCTFDetailDTO(c.title, c.tag, c.level, h.createdAt, h.status) " +
+            "FROM ChallengeCTF c " +
+            "INNER JOIN HistorySubmitChallengeCTF h " +
+            "ON c.id = h.challengeCTF.id " +
+            "WHERE h.user.id = :userId " +
+            "ORDER BY h.createdAt DESC")
+    List<UserChallengeCTFDetailDTO> findUserChallengeCTFDetail(@Param("userId") Integer userId);
+
+    @Query(value = "SELECT c.id, c.title, c.level, c.tag, h.total_submit, r.total_correct, r.total_wrong " +
+            "FROM elearning.challengectf c " +
+            "LEFT JOIN ( " +
+            "   SELECT challenge_ctf_id, " +
+            "   SUM(CASE isCompleted WHEN true THEN 1 ELSE 0 END) as total_correct, " +
+            "   SUM(CASE isCompleted WHEN false THEN 1 ELSE 0 END) as total_wrong " +
+            "   FROM elearning.challengectfresult " +
+            "   GROUP BY challenge_ctf_id " +
+            ") r ON c.id = r.challenge_ctf_id " +
+            "LEFT JOIN ( " +
+            "   SELECT challenge_CTF_id, " +
+            "   COUNT(id) as total_submit " +
+            "   FROM elearning.historysubmitchallengectf " +
+            "   GROUP BY challenge_CTF_id " +
+            ") h ON c.id = h.challenge_CTF_id", nativeQuery = true)
+    List<Object[]> findStatisticChallengeCTF();
+
+    @Query("SELECT new com.ptit.elearningsecurity.data.dto.ChallengeCTFDetailDTO(c.title, c.tag, c.level, h.createdAt, " +
+            "h.status, h.user.studentIdentity, h.user.firstname, h.user.lastname) " +
+            "FROM ChallengeCTF c " +
+            "INNER JOIN HistorySubmitChallengeCTF h " +
+            "ON c.id = h.challengeCTF.id " +
+            "WHERE c.id = :challengeCTFId " +
+            "ORDER BY h.createdAt DESC")
+    List<ChallengeCTFDetailDTO> findChallengeCTFDetail(@Param("challengeCTFId") Integer challengeCTFId);
 }

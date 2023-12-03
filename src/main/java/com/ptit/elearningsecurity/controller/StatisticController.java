@@ -1,6 +1,7 @@
 package com.ptit.elearningsecurity.controller;
 
 import com.ptit.elearningsecurity.data.dto.*;
+import com.ptit.elearningsecurity.data.response.ChallengeCTFDetailResponse;
 import com.ptit.elearningsecurity.data.response.QuizTimeCompletionResponse;
 import com.ptit.elearningsecurity.data.response.StatisticUserQuizResponse;
 import com.ptit.elearningsecurity.data.response.UserStatisticChallengeCTFResponse;
@@ -84,5 +85,20 @@ public class StatisticController {
     @GetMapping("/user-challenge-ctf")
     public ResponseEntity<List<StatisticUserChallengeCTFDTO>> getUserChallengeCTF() {
         return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getStatisticUserChallengeCTF());
+    }
+
+    @GetMapping("/user-challenge-ctf-detail")
+    public ResponseEntity<List<UserChallengeCTFDetailDTO>> getUserChallengeCTF(@RequestParam("userId") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getUserChallengeCTFDetail(userId));
+    }
+
+    @GetMapping("/challenge-ctf")
+    public ResponseEntity<List<StatisticChallengeCTFDTO>> getStatisticChallengeCTF() {
+        return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getStatisticChallengeCTF());
+    }
+
+    @GetMapping("/challenge-ctf-detail")
+    public ResponseEntity<List<ChallengeCTFDetailResponse>> getStatisticChallengeCTFDetail(@RequestParam("challengeCTFId") Integer challengeCTFId) {
+        return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getChallengeCTFDetail(challengeCTFId));
     }
 }
