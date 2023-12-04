@@ -1,6 +1,7 @@
 package com.ptit.elearningsecurity.controller;
 
 import com.ptit.elearningsecurity.data.dto.RankingScoreDTO;
+import com.ptit.elearningsecurity.data.dto.RankingUserDTO;
 import com.ptit.elearningsecurity.service.ranking.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,5 +23,10 @@ public class RankingController {
     @GetMapping("/get-top-5-user")
     public ResponseEntity<List<RankingScoreDTO>> getTop5User() {
         return ResponseEntity.status(HttpStatus.OK).body(rankingService.findTop5User());
+    }
+
+    @GetMapping("/list-user")
+    public ResponseEntity<List<RankingUserDTO>> getRankingUser() {
+        return ResponseEntity.status(HttpStatus.OK).body(rankingService.findUserRanking());
     }
 }
