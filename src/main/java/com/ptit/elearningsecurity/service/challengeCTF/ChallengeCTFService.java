@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+//import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +27,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,12 +47,16 @@ public class ChallengeCTFService implements IChallengeCTFService {
         return challengeCTFMapper.toListResponse(challengeCTFList);
     }
 
-
-
     @Override
     public List<ChallengeCTFResponse> getAllChallengeCTFResolveByUser(int userId) {
         List<ChallengeCTF> challengeCTFList = challengeCTFRepository.findAllChallengeCTFResolvedByUser(userId);
         return challengeCTFMapper.toListResponse(challengeCTFList);
+    }
+
+    @Override
+    public List<ChallengeCTFResponse> getRandomChallengeCTF() {
+        List<ChallengeCTF> lstChallengeCTF = challengeCTFRepository.findRandomChallengeCTF();
+        return challengeCTFMapper.toListResponse(lstChallengeCTF);
     }
 
     @Override

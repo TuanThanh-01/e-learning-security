@@ -18,6 +18,8 @@ public interface ChallengeCTFRepository extends JpaRepository<ChallengeCTF, Inte
             "where c.user_id = :user_id", nativeQuery = true)
     List<ChallengeCTF> findAllChallengeCTFResolvedByUser(@Param("user_id") Integer userId);
 
+    @Query(value = "SELECT * FROM challengectf ORDER BY RAND() LIMIT 3", nativeQuery = true)
+    List<ChallengeCTF> findRandomChallengeCTF();
     @Query("SELECT NEW com.ptit.elearningsecurity.data.dto.ChallengeCTFResponseDTO(c.id, c.title, c.content, " +
             "c.level, c.tag, c.hint, c.flag, c.point, c.urlFile, c.totalSolve, c.createdAt, c.updatedAt, r.isCompleted) " +
             "FROM ChallengeCTF c " +

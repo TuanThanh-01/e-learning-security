@@ -34,6 +34,12 @@ public class ChallengeCTFController {
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/random")
+    public ResponseEntity<List<ChallengeCTFResponse>> getRandomChallengeCTF() {
+        return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getRandomChallengeCTF());
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/all-by-user")
     public ResponseEntity<List<ChallengeCTFResponseDTO>> getAllChallengeCTFByUser(@RequestParam("userId") Integer userId) {
         return ResponseEntity.status(HttpStatus.OK).body(challengeCTFService.getAllChallengeCTFByUser(userId));

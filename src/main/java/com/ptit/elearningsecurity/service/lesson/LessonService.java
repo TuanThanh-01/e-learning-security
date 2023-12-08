@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -67,6 +69,16 @@ public class LessonService implements ILessonService {
         return lessonResponse;
     }
 
+    private String getAlphaNumericString() {
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz";
+        StringBuilder sb = new StringBuilder(8);
+        for (int i = 0; i < 8; i++) {
+            int index = (int) (AlphaNumericString.length() * Math.random());
+            sb.append(AlphaNumericString.charAt(index));
+        }
+        return sb.toString();
+    }
+
     private String uploadImage(MultipartFile image) throws IOException {
         Path staticPath = Paths.get("static");
         Path imagePath = Paths.get("images");
@@ -75,13 +87,14 @@ public class LessonService implements ILessonService {
         if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(commentPath))) {
             Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath).resolve(commentPath));
         }
-
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
-        String imageName = timeStamp.concat(Objects.requireNonNull(image.getOriginalFilename()));
+        String imageName = timeStamp.concat(getAlphaNumericString())
+                .concat(".")
+                .concat(Objects.requireNonNull(image.getOriginalFilename()).split("\\.")[1]);
         Path imageFilePath = CURRENT_FOLDER.resolve(staticPath)
                 .resolve(imagePath).resolve(commentPath)
                 .resolve(imageName);
-        try(OutputStream os = Files.newOutputStream(imageFilePath)){
+        try (OutputStream os = Files.newOutputStream(imageFilePath)) {
             os.write(image.getBytes());
         }
         return "/images/lesson/" + imageName;
@@ -109,16 +122,15 @@ public class LessonService implements ILessonService {
                     DataUtils.ERROR_TOPIC_NOT_FOUND
             );
         }
-        if(lessonRepository.existsByTitle(lessonRequest.getTitle())) {
+        if (lessonRepository.existsByTitle(lessonRequest.getTitle())) {
             throw new LessonCustomException(
                     "Lesson Exists By Title: " + lessonRequest.getTitle(),
                     DataUtils.ERROR_LESSON_EXISTS
             );
         }
-        if(lessonRequest.getCoverImage() == null) {
+        if (lessonRequest.getCoverImage() == null) {
             lesson.setCoverImage("/images/lesson/default.png");
-        }
-        else {
+        } else {
             String coverImage = uploadImage(lessonRequest.getCoverImage());
             lesson.setCoverImage(coverImage);
         }
@@ -176,5 +188,10 @@ public class LessonService implements ILessonService {
         Lesson lesson = lessonOptional.get();
         deleteImageResource(lesson.getCoverImage());
         lessonRepository.delete(lesson);
+    }
+
+    @Override
+    public String uploadImageLesson(MultipartFile file) throws IOException {
+        return uploadImage(file);
     }
 }

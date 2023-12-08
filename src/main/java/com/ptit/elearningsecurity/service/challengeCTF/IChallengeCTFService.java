@@ -14,6 +14,7 @@ public interface IChallengeCTFService {
     List<ChallengeCTFResponseDTO> getAllChallengeCTFByUser(int userId);
     List<ChallengeCTFResponse> getAllChallengeCTF();
     List<ChallengeCTFResponse> getAllChallengeCTFResolveByUser(int userId);
+    List<ChallengeCTFResponse> getRandomChallengeCTF();
     Resource load(String filename);
     ChallengeCTFResponse getChallengeCTFById(Integer challengeCTFId) throws ChallengeCTFCustomException;
     String getFlagCTFById(Integer challengeCTFId) throws ChallengeCTFCustomException;

@@ -55,6 +55,12 @@ public class LessonController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/upload-image", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadImageLesson(@RequestParam("imageLesson") MultipartFile imageLesson) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.uploadImageLesson(imageLesson));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<LessonResponse> updateLesson(
             @RequestParam(value = "title", required = false) String title,
@@ -80,4 +86,7 @@ public class LessonController {
         lessonService.deleteLesson(lessonID);
         return ResponseEntity.status(HttpStatus.OK).body("Delete Lesson Successfully!");
     }
+
+
+
 }
