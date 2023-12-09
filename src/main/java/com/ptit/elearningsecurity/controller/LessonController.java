@@ -31,9 +31,21 @@ public class LessonController {
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/random-lesson")
+    public ResponseEntity<List<LessonResponse>> getRandomLesson(@RequestParam("lessonId") Integer lessonId) {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.findLessonRandom(lessonId));
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<LessonResponse> findLessonById(@PathVariable("id") int lessonID) throws LessonCustomException {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.findById(lessonID));
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/find-by-title")
+    public ResponseEntity<LessonResponse> findLessonByTitle(@RequestParam("title") String title) throws LessonCustomException {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.findLessonByTitle(title));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

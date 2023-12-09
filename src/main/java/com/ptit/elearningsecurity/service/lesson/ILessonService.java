@@ -12,7 +12,9 @@ import java.util.List;
 
 public interface ILessonService {
     List<LessonResponse> getAllLesson();
+    List<LessonResponse> findLessonRandom(Integer lessonId);
     LessonResponse findById(int lessonID) throws LessonCustomException;
+    LessonResponse findLessonByTitle(String title) throws LessonCustomException;
     LessonResponse createLesson(LessonRequest lessonRequest) throws CategoryLessonCustomException, IOException, LessonCustomException;
     LessonResponse updateLesson(LessonRequest lessonRequest, int lessonID) throws CategoryLessonCustomException, IOException, ImageDataCustomException, LessonCustomException;
     void deleteLesson(int lessonID) throws LessonCustomException, IOException;

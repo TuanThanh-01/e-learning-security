@@ -2,7 +2,6 @@ package com.ptit.elearningsecurity.entity;
 
 import com.ptit.elearningsecurity.entity.discuss.Comment;
 import com.ptit.elearningsecurity.entity.discuss.Post;
-import com.ptit.elearningsecurity.entity.lecture.Progress;
 import com.ptit.elearningsecurity.entity.quiz.Score;
 import com.ptit.elearningsecurity.entity.token.Token;
 
@@ -55,9 +54,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Score> scores;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Progress progress;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

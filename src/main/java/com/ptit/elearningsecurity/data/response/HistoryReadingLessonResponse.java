@@ -1,24 +1,23 @@
 package com.ptit.elearningsecurity.data.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.Instant;
-import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true)
-public class ProgressResponse {
-    private Long id;
-    @JsonProperty("total_completed_lessons")
-    private Integer totalCompletedLessons;
+public class HistoryReadingLessonResponse {
+    private Integer id;
     @JsonProperty("created_at")
     private Instant createdAt;
-    @JsonProperty("updated_at")
-    private Instant updatedAt;
     @JsonProperty("user")
     private UserResponse userResponse;
-    @JsonProperty("lesson_finished")
-    private List<String> lessonFinished;
+    @JsonProperty("lesson")
+    private LessonResponse lessonResponse;
 }

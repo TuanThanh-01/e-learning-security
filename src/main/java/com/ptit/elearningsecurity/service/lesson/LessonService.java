@@ -47,8 +47,25 @@ public class LessonService implements ILessonService {
     }
 
     @Override
+    public List<LessonResponse> findLessonRandom(Integer lessonId) {
+        List<Lesson> lessons = lessonRepository.findRandomLesson(lessonId);
+        List<LessonResponse> lessonResponses = new ArrayList<>();
+        lessons.forEach(lesson -> lessonResponses.add(mapImageDataToLessonResponse(lesson)));
+        return lessonResponses;
+    }
+
+    @Override
     public LessonResponse findById(int lessonID) throws LessonCustomException {
         Optional<Lesson> lessonOptional = lessonRepository.findById(lessonID);
+        if (lessonOptional.isEmpty()) {
+            throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
+        }
+        return mapImageDataToLessonResponse(lessonOptional.get());
+    }
+
+    @Override
+    public LessonResponse findLessonByTitle(String title) throws LessonCustomException {
+        Optional<Lesson> lessonOptional = lessonRepository.findByTitle(title);
         if (lessonOptional.isEmpty()) {
             throw new LessonCustomException("Lesson Not Found", DataUtils.ERROR_LESSON_NOT_FOUND);
         }

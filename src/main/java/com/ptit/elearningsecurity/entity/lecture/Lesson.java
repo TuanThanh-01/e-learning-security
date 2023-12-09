@@ -43,7 +43,4 @@ public class Lesson {
             inverseJoinColumns = @JoinColumn(name = "category_lession_id")
     )
     private List<CategoryLesson> categoryLessons;
-
-    @ManyToMany(mappedBy = "lessons")
-    private List<Progress> progresses;
 }
