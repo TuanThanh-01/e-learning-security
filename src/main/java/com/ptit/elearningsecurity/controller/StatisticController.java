@@ -1,11 +1,9 @@
 package com.ptit.elearningsecurity.controller;
 
 import com.ptit.elearningsecurity.data.dto.*;
-import com.ptit.elearningsecurity.data.response.ChallengeCTFDetailResponse;
-import com.ptit.elearningsecurity.data.response.QuizTimeCompletionResponse;
-import com.ptit.elearningsecurity.data.response.StatisticUserQuizResponse;
-import com.ptit.elearningsecurity.data.response.UserStatisticChallengeCTFResponse;
+import com.ptit.elearningsecurity.data.response.*;
 import com.ptit.elearningsecurity.exception.UserCustomException;
+import com.ptit.elearningsecurity.service.statistic.LessonStatisticService;
 import com.ptit.elearningsecurity.service.statistic.QuizStatisticService;
 import com.ptit.elearningsecurity.service.statistic.StatisticChallengeCTFService;
 import com.ptit.elearningsecurity.service.statistic.UserStatisticChallengeCTFService;
@@ -24,6 +22,7 @@ public class StatisticController {
     private final UserStatisticChallengeCTFService userStatisticChallengeCTFService;
     private final QuizStatisticService quizStatisticService;
     private final StatisticChallengeCTFService statisticChallengeCTFService;
+    private final LessonStatisticService lessonStatisticService;
 
     @GetMapping("/challenge-ctf-user")
     public ResponseEntity<UserStatisticChallengeCTFResponse> statisticChallengeCTFByUser(@RequestParam("userId") Integer userId)
@@ -100,5 +99,30 @@ public class StatisticController {
     @GetMapping("/challenge-ctf-detail")
     public ResponseEntity<List<ChallengeCTFDetailResponse>> getStatisticChallengeCTFDetail(@RequestParam("challengeCTFId") Integer challengeCTFId) {
         return ResponseEntity.status(HttpStatus.OK).body(statisticChallengeCTFService.getChallengeCTFDetail(challengeCTFId));
+    }
+
+    @GetMapping("/overview-lesson")
+    public ResponseEntity<OverviewLessonDTO> getOverViewLesson() {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonStatisticService.getOverviewLesson());
+    }
+
+    @GetMapping("/history-lesson")
+    public ResponseEntity<List<HistoryReadingLessonDTO>> getHistoryLesson() {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonStatisticService.getHistoryReadingLesson());
+    }
+
+    @GetMapping("/lesson-view")
+    public ResponseEntity<List<StatisticLessonDTO>> getStatisticLessonView() {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonStatisticService.getAllStatisticLessonDTO());
+    }
+
+    @GetMapping("/user-lesson-overview")
+    public ResponseEntity<List<StatisticUserLessonResponse>> getAllStatisticUserLessonOverview() {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonStatisticService.getAllStatisticUserLessonOverview());
+    }
+
+    @GetMapping("/user-lesson-detail")
+    public ResponseEntity<List<StatisticUserLessonDetailResponse>> getAllStatisticUserLessonDetail(@RequestParam("userId") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonStatisticService.getAllStatisticUserLessonDetail(userId));
     }
 }
