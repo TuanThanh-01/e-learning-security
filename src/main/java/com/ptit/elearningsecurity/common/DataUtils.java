@@ -16,10 +16,8 @@ public class DataUtils {
     public static final String ERROR_QUIZ_NOT_FOUND = "ERROR_QUIZ_NOT_FOUND";
     public static final String ERROR_QUESTION_NOT_FOUND = "ERROR_QUESTION_NOT_FOUND";
     public static final String ERROR_SCORE_NOT_FOUND = "ERROR_SCORE_NOT_FOUND";
-    public static final String ERROR_PROGRESS_NOT_FOUND = "ERROR_PROGRESS_NOT_FOUND";
-    public static final String ERROR_JWT_TOKEN_NOT_VALID = "ERROR_JWT_TOKEN_NOT_VALID";
     public static final String ERROR_CHALLENGE_CTF_NOT_FOUND = "ERROR_CHALLENGE_CTF_NOT_FOUND";
-    public static final String ERROR_HISTORY_ACCEPT_CHALLENGE_CTF_NOT_FOUND = "ERROR_HISTORY_ACCEPT_CHALLENGE_CTF_NOT_FOUND";
+    public static final String ERROR_LAB_NOT_FOUND = "ERROR_LAB_NOT_FOUND";
 
     public static String encodeBase64(String message) {
         return Base64.getEncoder().encodeToString(message.getBytes());

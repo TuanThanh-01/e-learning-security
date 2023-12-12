@@ -1,7 +1,5 @@
 package com.ptit.elearningsecurity.entity;
 
-import com.ptit.elearningsecurity.entity.discuss.Comment;
-import com.ptit.elearningsecurity.entity.discuss.Post;
 import com.ptit.elearningsecurity.entity.quiz.Score;
 import com.ptit.elearningsecurity.entity.token.Token;
 
@@ -46,11 +44,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Post> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Score> scores;
