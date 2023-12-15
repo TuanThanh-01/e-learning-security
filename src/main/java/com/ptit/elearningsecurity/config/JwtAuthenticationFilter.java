@@ -8,6 +8,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,7 +64,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-        } catch (SignatureException ex) {
+        } catch (BadCredentialsException ex) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print("Bad Credential");
+        }
+        catch (SignatureException ex) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print("Invalid JWT signature");
         } catch (MalformedJwtException ex) {

@@ -24,10 +24,16 @@ public class HistoryPracticeLabController {
         return ResponseEntity.status(HttpStatus.OK).body(historyPracticeLabService.getHistoryPracticeLab());
     }
 
+    @GetMapping("/all-by-user")
+    public ResponseEntity<List<HistoryPracticeLabResponse>> getAllHistoryPracticeLabByUser(@RequestParam("userId") Integer userId) throws UserCustomException {
+        return ResponseEntity.status(HttpStatus.OK).body(historyPracticeLabService.getAllHistoryPraceticeLabByUser(userId));
+    }
+
     @PostMapping("/create")
     public ResponseEntity<String> createHistoryPracticeLab(@RequestBody HistoryPracticeLabRequest historyPracticeLabRequest)
             throws LabCustomException, UserCustomException {
         historyPracticeLabService.createHistoryPracticeLab(historyPracticeLabRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Create success");
     }
+
 }
