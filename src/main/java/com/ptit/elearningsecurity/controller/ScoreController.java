@@ -36,7 +36,7 @@ public class ScoreController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/get-all-score-by-user/{userId}")
-    public ResponseEntity<List<ScoreResponse>> getAllScoreByUser(@PathVariable("userId") int userId) throws UserCustomException {
+    public ResponseEntity<List<ScoreResponse>> getAllScoreByUser(@PathVariable("userId") int userId) {
         return ResponseEntity.status(HttpStatus.OK).body(scoreService.getAllScoreByUser(userId));
     }
 

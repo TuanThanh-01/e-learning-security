@@ -67,12 +67,8 @@ public class ScoreService implements IScoreService{
     }
 
     @Override
-    public List<ScoreResponse> getAllScoreByUser(int userId) throws UserCustomException {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if(userOptional.isEmpty()) {
-            throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
-        }
-        List<Score> scores = scoreRepository.findAllByUser(userOptional.get());
+    public List<ScoreResponse> getAllScoreByUser(int userId) {
+        List<Score> scores = scoreRepository.findAllByUser(userId);
         List<ScoreResponse> scoreResponses = new ArrayList<>();
         scores.forEach(score -> {
             ScoreResponse scoreResponse = scoreMapper.toResponse(score);

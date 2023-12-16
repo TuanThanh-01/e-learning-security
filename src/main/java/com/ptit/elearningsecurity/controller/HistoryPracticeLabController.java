@@ -25,8 +25,8 @@ public class HistoryPracticeLabController {
     }
 
     @GetMapping("/all-by-user")
-    public ResponseEntity<List<HistoryPracticeLabResponse>> getAllHistoryPracticeLabByUser(@RequestParam("userId") Integer userId) throws UserCustomException {
-        return ResponseEntity.status(HttpStatus.OK).body(historyPracticeLabService.getAllHistoryPraceticeLabByUser(userId));
+    public ResponseEntity<List<HistoryPracticeLabResponse>> getAllHistoryPracticeLabByUser(@RequestParam("userId") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(historyPracticeLabService.getAllHistoryPracticeLabByUser(userId));
     }
 
     @PostMapping("/create")

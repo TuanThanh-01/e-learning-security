@@ -108,7 +108,7 @@ public class HistorySubmitChallengeCTFService implements IHistorySubmitChallenge
             throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
         }
         List<HistorySubmitChallengeCTF> listHistorySubmitChallengeCTF =
-                historySubmitChallengeRepository.findTop8ByUserOrderByCreatedAtDesc(userOptional.get());
+                historySubmitChallengeRepository.findAllByUserOrderByCreatedAtDesc(userOptional.get());
         List<HistorySubmitChallengeCTFResponse> historySubmitChallengeCTFResponses = new ArrayList<>();
         listHistorySubmitChallengeCTF.forEach(historySubmitChallengeCTF -> {
             HistorySubmitChallengeCTFResponse response = getHistorySubmitChallengeCTFResponse(historySubmitChallengeCTF);

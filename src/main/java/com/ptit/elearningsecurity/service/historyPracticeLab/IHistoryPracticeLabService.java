@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface IHistoryPracticeLabService {
     List<HistoryPracticeLabResponse> getHistoryPracticeLab();
-    List<HistoryPracticeLabResponse> getAllHistoryPraceticeLabByUser(Integer userId) throws UserCustomException;
+    List<HistoryPracticeLabResponse> getAllHistoryPracticeLabByUser(Integer userId);
     void createHistoryPracticeLab(HistoryPracticeLabRequest historyPracticeLabRequest) throws UserCustomException, LabCustomException;
 }

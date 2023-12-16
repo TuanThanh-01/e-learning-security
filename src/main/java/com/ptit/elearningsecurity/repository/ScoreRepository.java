@@ -9,6 +9,7 @@ import com.ptit.elearningsecurity.entity.quiz.Quiz;
 import com.ptit.elearningsecurity.entity.quiz.Score;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,7 +17,8 @@ import java.util.List;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Integer> {
     List<Score> findAllByQuiz(Quiz quiz);
-    List<Score> findAllByUser(User user);
+    @Query(value = "SELECT * FROM score WHERE user_id=:userID ORDER BY createdAt DESC ", nativeQuery = true)
+    List<Score> findAllByUser(@Param("userID") Integer userID);
 
     @Query("SELECT new com.ptit.elearningsecurity.data.dto.QuizScoreDTO(s.quiz.name, avg(s.score)) " +
             "FROM Score s " +

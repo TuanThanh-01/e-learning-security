@@ -47,12 +47,8 @@ public class HistoryPracticeLabService implements IHistoryPracticeLabService {
     }
 
     @Override
-    public List<HistoryPracticeLabResponse> getAllHistoryPraceticeLabByUser(Integer userId) throws UserCustomException {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if(userOptional.isEmpty()) {
-            throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
-        }
-        List<HistoryPracticeLab> historyPracticeLabList = historyLabRepository.findAllByUser(userOptional.get());
+    public List<HistoryPracticeLabResponse> getAllHistoryPracticeLabByUser(Integer userId) {
+        List<HistoryPracticeLab> historyPracticeLabList = historyLabRepository.findAllByUser(userId);
         return historyPracticeLabList.stream()
                 .map(historyPracticeLab -> {
                     HistoryPracticeLabResponse historyPracticeLabResponse =
