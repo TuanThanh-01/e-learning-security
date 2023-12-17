@@ -43,8 +43,11 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
 
-    public String register(UserRequest userRequest) {
+    public String register(UserRequest userRequest) throws UserCustomException {
         User user = userMapper.toPojo(userRequest);
+        if(userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new UserCustomException("User email exists", DataUtils.ERROR_USER_EXIST);
+        }
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()))
                 .setRole(Role.USER)
                 .setEnabled(false);
@@ -67,6 +70,7 @@ public class AuthenticationService {
             }
             User user = userOptional.get();
             user.setEnabled(true);
+            emailSenderService.sendEmailSuccess(user.getEmail());
             userRepository.save(user);
             return "Email verified successfully!";
         }
