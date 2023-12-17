@@ -23,6 +23,11 @@ public class LabController {
         return ResponseEntity.status(HttpStatus.OK).body(labService.getAllLab());
     }
 
+    @GetMapping("/get-by-tag")
+    public ResponseEntity<List<LabResponse>> getAllByTag(@RequestParam("tag") String tag) {
+        return ResponseEntity.status(HttpStatus.OK).body(labService.getAllLabByTag(tag));
+    }
+
     @PostMapping("/create")
     public ResponseEntity<LabResponse> createLab(@RequestBody LabRequest labRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(labService.createLab(labRequest));

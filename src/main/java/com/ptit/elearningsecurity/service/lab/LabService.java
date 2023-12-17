@@ -26,6 +26,10 @@ public class LabService implements ILabService{
         return labMapper.toLabResponse(labRepository.findAll());
     }
 
+    public List<LabResponse> getAllLabByTag(String tag) {
+        return labMapper.toLabResponse(labRepository.findTop3ByTag(tag));
+    }
+
     @Override
     public LabResponse createLab(LabRequest labRequest) {
         Lab lab = labMapper.toPojo(labRequest);
