@@ -83,6 +83,12 @@ public class LessonService implements ILessonService {
                         .map(CategoryLesson::getCategoryName)
                         .collect(Collectors.toList())
         );
+        lessonResponse.setLstCategoryLessonDescription(
+                lesson.getCategoryLessons()
+                        .stream()
+                        .map(CategoryLesson::getDescription)
+                        .collect(Collectors.toList())
+        );
         return lessonResponse;
     }
 
