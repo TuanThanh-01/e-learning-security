@@ -78,6 +78,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(userID, userRequest, image));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/update-password/{id}")
+    public ResponseEntity<String> updatePassword(
+            @PathVariable("id") int userID,
+            @RequestParam("password") String password) throws UserCustomException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserPassword(password, userID));
+    }
+
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping(value = "/upload-avatar/{id}", consumes = "multipart/form-data")
     public ResponseEntity<UserResponse> uploadAvatar(@PathVariable("id") int userID, @RequestParam("image") MultipartFile multipartFile)

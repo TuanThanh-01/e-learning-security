@@ -142,4 +142,18 @@ public class UserService implements IUserService{
         }
         userRepository.delete(userOptional.get());
     }
+
+    @Override
+    public String updateUserPassword(String password, int userId) throws UserCustomException {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new UserCustomException("User Not Found", DataUtils.ERROR_USER_NOT_FOUND);
+        }
+        User user = userOptional.get();
+        if(Objects.nonNull(password) && !"".equalsIgnoreCase(password)) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+        userRepository.save(user);
+        return "Success change password";
+    }
 }

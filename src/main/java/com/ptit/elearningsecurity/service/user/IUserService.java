@@ -17,4 +17,5 @@ public interface IUserService {
     UserResponse update(int userID, UserRequest userRequest, MultipartFile image) throws UserCustomException, IOException;
     UserResponse uploadAvatar(int userID, MultipartFile multipartFile) throws UserCustomException, IOException;
     void delete(int userID) throws UserCustomException;
+    String updateUserPassword(String password, int userId) throws UserCustomException;
 }
