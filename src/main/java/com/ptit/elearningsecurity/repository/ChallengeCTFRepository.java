@@ -92,7 +92,8 @@ public interface ChallengeCTFRepository extends JpaRepository<ChallengeCTF, Inte
             "   FROM historysubmitchallengectf " +
             "   GROUP BY user_id " +
             ") h ON h.user_id = u.id " +
-            "WHERE u.role <> 'ADMIN'", nativeQuery = true)
+            "WHERE u.role <> 'ADMIN' " +
+            "ORDER BY totalTry DESC", nativeQuery = true)
     List<Object[]> findStatisticUserChallengeCTF();
 
     @Query("SELECT new com.ptit.elearningsecurity.data.dto.UserChallengeCTFDetailDTO(c.title, c.tag, c.level, h.createdAt, h.status) " +
