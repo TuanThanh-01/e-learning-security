@@ -37,6 +37,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "   FROM historysubmitchallengectf " +
             "   GROUP BY user_id " +
             ") h ON h.user_id = u.id " +
+            "WHERE u.role <> 'ADMIN' " +
             "ORDER BY score DESC ", nativeQuery = true)
     List<Object[]> findRankingUserChallengeCTF();
 }

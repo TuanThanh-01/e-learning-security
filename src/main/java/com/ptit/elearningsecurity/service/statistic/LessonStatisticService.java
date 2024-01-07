@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,12 +65,14 @@ public class LessonStatisticService implements ILessonStatisticService {
     public List<StatisticUserLessonResponse> getAllStatisticUserLessonOverview() {
         List<StatisticUserLessonResponse> results = new ArrayList<>();
         for(Object[] object : historyReadingLessonRepository.findStatisticUserLesson()) {
-            StatisticUserLessonResponse statisticUserLessonResponse = new StatisticUserLessonResponse();
-            statisticUserLessonResponse.setUserId((Integer) object[0])
-                    .setUsername(object[2] + " " + object[1])
-                    .setStudentIdentity((String) object[3])
-                    .setTotalLessonLearn((BigInteger) object[4]);
-            results.add(statisticUserLessonResponse);
+            if(!Objects.equals(object[3], "B19DCAT179")) {
+                StatisticUserLessonResponse statisticUserLessonResponse = new StatisticUserLessonResponse();
+                statisticUserLessonResponse.setUserId((Integer) object[0])
+                        .setUsername(object[2] + " " + object[1])
+                        .setStudentIdentity((String) object[3])
+                        .setTotalLessonLearn((BigInteger) object[4]);
+                results.add(statisticUserLessonResponse);
+            }
         }
         return results;
     }

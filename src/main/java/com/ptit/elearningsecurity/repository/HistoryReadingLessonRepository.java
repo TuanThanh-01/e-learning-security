@@ -28,13 +28,14 @@ public interface HistoryReadingLessonRepository extends JpaRepository<HistoryRea
             "LIMIT 4", nativeQuery = true)
     List<HistoryReadingLesson> findHistoryReadingLessonRecentByUser(@Param("userId") Integer userId);
 
-    @Query(value = "Select userId, firstname, lastname, student_identity, count(lessonId) FROM ( " +
+    @Query(value = "Select userId, firstname, lastname, student_identity, count(lessonId) as total_learn FROM ( " +
             "Select u.id as userId, u.firstname as firstname, u.lastname as lastname, u.studentIdentity as student_identity, h.lesson_id as lessonId, count(h.lesson_id) as total_view " +
             "from users u " +
             "LEFT JOIN historyreadinglesson h ON h.user_id = u.id " +
             "group by h.lesson_id, u.firstname, u.lastname, u.studentIdentity, u.id " +
             ") AS subquery " +
-            "group by firstname, lastname, student_identity, userId", nativeQuery = true)
+            "group by firstname, lastname, student_identity, userId " +
+            "order by total_learn desc", nativeQuery = true)
     List<Object[]> findStatisticUserLesson();
 
     @Query("SELECT new com.ptit.elearningsecurity.data.dto.StatisticUserLessonDetailDTO(u.firstname, u.lastname, u.studentIdentity, l.title, count (h.lesson.id)) FROM User  u " +
